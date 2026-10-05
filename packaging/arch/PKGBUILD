@@ -1,0 +1,41 @@
+# Maintainer: Demid <dezaetterg@users.noreply.github.com>
+pkgname=echo-weather
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Atmospheric meteorological desktop application with liquid glass aesthetics"
+arch=('any')
+url="https://github.com/demid/echo-weather"
+license=('GPL-3.0-or-later')
+depends=(
+    'gtk4'
+    'libadwaita'
+    'python>=3.10'
+    'python-gobject'
+    'python-cairo'
+)
+makedepends=('python-setuptools')
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver" 2>/dev/null || cd "$srcdir"
+
+    # Install application files
+    install -d "$pkgdir/usr/share/$pkgname"
+    cp -r *.py *.css assets data detail_cards models providers services "$pkgdir/usr/share/$pkgname/"
+
+    # Install launcher script
+    install -d "$pkgdir/usr/bin"
+    install -m 755 echo-weather "$pkgdir/usr/bin/$pkgname"
+
+    # Install desktop entry
+    install -Dm 644 com.echo.weather.desktop "$pkgdir/usr/share/applications/com.echo.weather.desktop"
+
+    # Install desktop icon
+    if [ -f "assets/icons/weather/clear-day.svg" ]; then
+        install -Dm 644 assets/icons/weather/clear-day.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/com.echo.weather.svg"
+    fi
+
+    # Install license
+    install -Dm 644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

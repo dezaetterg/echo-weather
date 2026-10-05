@@ -7,7 +7,7 @@ name = "echo-weather"
 version = "1.0.0"
 description = "Atmospheric meteorological desktop application with liquid glass aesthetics"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.10"
 authors = [
     { name = "Demid" }
@@ -26,7 +26,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: X11 Applications :: GTK",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",

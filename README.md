@@ -1,8 +1,8 @@
-# Echo Weather 🌦️
+# Echo Weather
 
 <div align="center">
 
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)
 ![GTK 4.0](https://img.shields.io/badge/GTK-4.0-4B89AC.svg?logo=gnome&logoColor=white)
 ![Cairo Graphics](https://img.shields.io/badge/Graphics-Cairo-D22630.svg)
@@ -11,154 +11,170 @@
 
 **Atmospheric meteorological desktop application for Linux with liquid glass aesthetics, real-time particle physics, and professional weather analytics.**
 
-*Атмосферное метеорологическое десктоп-приложение для Linux с эстетикой Liquid Glass, физикой частиц реального времени и глубокой аналитикой.*
+*Атмосферное метеорологическое десктоп-приложение для Linux с эстетикой Liquid Glass, физикой частиц реального времени и метеорологической аналитикой.*
 
 </div>
 
 ---
 
-## ✨ Features
+## Возможности
 
-- **💎 Liquid Glass & Bento Design**:
-  - Translucent frosted glass containers with subtle inner borders and adaptive ambient shadows.
-  - 14 dynamic color atmospheres reflecting the live solar cycle (Dawn, Daytime, Golden Hour, Twilight, Night) and current weather conditions.
-  - Native GTK4 styling with smooth transitions and high-DPI scaling.
+- **Интерфейс Liquid Glass и Bento**:
+  - Полупрозрачные карточки с матовым эффектом, тонкими границами и мягкими адаптивными тенями.
+  - 14 динамических атмосферных тем, сменяющихся в зависимости от положения солнца (рассвет, полдень, золотой час, сумерки, ночь) и погодных условий.
+  - Нативный интерфейс GTK4 с плавными переходами и поддержкой масштабирования HiDPI.
 
-- **🌌 Atmospheric Particle Canvas**:
-  - Built-in Cairo physics engine running at up to 60 FPS with adaptive frame throttling for low CPU/battery consumption.
-  - Rain with dynamic wind drift angle and impact splashes.
-  - Floating drizzle and mist.
-  - Twinkling night sky starfield with variable brightness and sporadic shooting stars (comets).
+- **Физический холст атмосферных частиц**:
+  - Встроенный физический движок на базе Cairo с адаптивным управлением частотой кадров (до 60 FPS) для экономии ресурсов процессора и батареи.
+  - Реалистичные капли дождя с углом сноса по ветру и всплесками при контакте с поверхностью.
+  - Парящая морось и легкая взвесь.
+  - Мерцающее ночное звездное небо и редкие падающие метеоры со световым шлейфом.
 
-- **🔬 10 Meteorological Deep-Dive Modules**:
-  1. **Conditions**: Interactive cubic Bezier spline hourly temperature chart with gesture scrubbing, min/max ranges, and 10-day overview.
-  2. **UV Index**: Live ultraviolet radiation curve, peak exposure time, and WHO skin protection guidelines.
-  3. **Wind & Gusts**: 360° circular compass with wind vector pointer, peak gusts, and interactive Beaufort scale reference table.
-  4. **Precipitation**: Hourly volume histogram (mm/h), probability distribution, intensity categories, and next-hour nowcast.
-  5. **Solar Cycles**: Solar arc diagram calculating solar elevation, golden hour, civil/nautical/astronomical twilight, and annual daylight tables.
-  6. **Moon & Lunar Astronomy**: Simulated 3D lunar sphere with illumination percentage, lunar distance (apogee/perigee), moonrise/moonset times, and 30-day lunar calendar.
-  7. **Humidity & Dew Point**: Hourly moisture spline, dew point calculation, and comfort rating.
-  8. **Visibility**: Atmospheric transparency assessment and fog/haze safety classifications.
-  9. **Pressure & Barometer**: Circular gauge barometer dial tracking trends in mmHg and hPa.
-  10. **Climate Averages**: Comparison of current temperatures against 30-year climatological norms with monthly historical distribution.
+- **10 специализированных аналитических модулей**:
+  1. **Погодные условия**: интерактивный почасовой график температуры на базе кубических сплайнов Безье с поддержкой жестов курсора и 10-дневным прогнозом.
+  2. **УФ-индекс**: расчет ультрафиолетового излучения, пиковые часы и рекомендации ВОЗ по защите кожи.
+  3. **Ветер и порывы**: 360-градусный круговой компас с вектором направления ветра, фиксация максимальных порывов и интерактивная шкала Бофорта.
+  4. **Осадки**: почасовая гистограмма объема осадков (мм/ч) и вероятности, классификация интенсивности и прогноз на ближайший час.
+  5. **Солнечные циклы**: расчет дуги солнца, времени золотого часа, гражданских, навигационных и астрономических сумерек, годовая таблица светового дня.
+  6. **Лунная астрономия**: 3D-моделирование лунной сферы с фазами освещения, расстояние до Луны в километрах, время восхода, заката и 30-дневный лунный календарь.
+  7. **Влажность и комфорт**: суточный график относительной влажности, расчет точки росы и шкала духоты воздуха.
+  8. **Видимость**: оценка прозрачности атмосферы и классификация условий (туман, дымка, ясная видимость).
+  9. **Давление и барометр**: круговая шкала барометра с индикацией тенденции изменения давления (в мм рт. ст. и гПа).
+  10. **Климатическая норма**: сопоставление текущих значений с 30-летними климатическими нормами и помесячная статистика аномалий.
 
-- **🌐 Multi-Model Weather Engine**:
-  - **Open-Meteo**: Global ensemble forecasts with high-resolution precipitation nowcasting.
-  - **ECMWF IFS**: European Centre for Medium-Range Weather Forecasts (industry gold standard).
-  - **DWD ICON**: Deutscher Wetterdienst high-precision model.
-  - **MET Norway**: High-latitude meteorological modeling.
-  - **Consensus Blending**: Intelligent weighted average across multiple models.
-  - **Diurnal Fallback Engine**: Realistic offline fallback simulation when disconnected.
+- **Многомодельный метеорологический движок**:
+  - **Open-Meteo**: глобальные ансамблевые прогнозы с оперативным уточнением.
+  - **ECMWF IFS**: европейский центр среднесрочных прогнозов погоды (мировой эталон точности).
+  - **DWD ICON**: немецкая высокоточная гидродинамическая модель атмосферы.
+  - **MET Norway**: модель норвежского метеорологического института.
+  - **Консенсусный прогноз**: объединение нескольких моделей для максимальной надежности.
+  - **Офлайн-режим**: симуляция суточного хода температуры при отсутствии подключения к сети.
 
-- **🌍 City Management & Localization**:
-  - Instant city search with autocompletion and offline cache of major global cities.
-  - Pinning favorite cities and setting a primary Home City (`🏠`).
-  - Full localization in Russian and English with automatic language detection.
-  - Configurable units: Celsius / Fahrenheit, km/h / m/s / mph, mmHg / hPa.
+- **Управление городами и локализация**:
+  - Быстрый поиск с автодополнением и встроенной базой городов.
+  - Закрепление избранных городов и выбор основного домашнего города.
+  - Полная поддержка русского и английского языков с автоматическим определением.
+  - Настраиваемые единицы измерения: Цельсий / Фаренгейт, км/ч / м/с / миль/ч, мм рт. ст. / гПа.
 
 ---
 
-## 🚀 Installation
+## Установка
 
-### System Dependencies
+### Системные зависимости
 
-Echo Weather is built natively on **GTK4**, **Libadwaita** (optional, recommended), **PyGObject**, and **Cairo**.
+Для работы приложения требуются библиотеки **GTK 4.0**, **PyGObject** и **Cairo**.
 
 #### Arch Linux / Manjaro
 ```bash
 sudo pacman -S gtk4 libadwaita python-gobject python-cairo
 ```
 
-#### Fedora / RHEL
-```bash
-sudo dnf install gtk4 libadwaita python3-gobject python3-cairo
-```
-
-#### Ubuntu 24.04+ / Debian 12+
+#### Debian 12+ / Ubuntu 24.04+
 ```bash
 sudo apt update
 sudo apt install libgtk-4-1 gir1.2-gtk-4.0 gir1.2-adw-1 python3-gi python3-gi-cairo
 ```
 
+#### Fedora
+```bash
+sudo dnf install gtk4 libadwaita python3-gobject python3-cairo
+```
+
 ---
 
-### Installing Echo Weather
+### Пакеты и способы установки
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/demid/echo-weather.git
-   cd echo-weather
-   ```
+#### 1. Debian / Ubuntu (.deb пакет)
+Готовый пакет находится в каталоге `dist/` или в релизах GitHub:
+```bash
+sudo dpkg -i dist/echo-weather_1.0.0-1_all.deb
+sudo apt-get install -f
+```
 
-2. **Run the installer:**
-   ```bash
-   ./install.sh
-   ```
-   The installer copies application files to `~/.local/share/echo-weather`, places the executable in `~/.local/bin/echo-weather`, installs the `.desktop` launcher, and updates desktop caches.
+Сборка пакета из исходников:
+```bash
+./packaging/build_packages.sh
+```
 
-3. **Launch the app:**
-   - From your application menu: search for **Echo Weather**.
-   - Or from terminal:
-     ```bash
-     echo-weather
-     ```
+#### 2. Arch Linux (PKGBUILD)
+Файл сборки для Arch Linux размещен в `packaging/arch/PKGBUILD`:
+```bash
+cd packaging/arch
+makepkg -si
+```
 
-### Running Directly Without Installing
-You can run Echo Weather directly from the cloned repository:
+#### 3. Исходный архив (.tar.gz)
+Релизный архив генерируется скриптом сборщика в каталог `dist/`:
+```bash
+tar -xzf dist/echo-weather-1.0.0.tar.gz
+cd echo-weather-1.0.0
+./install.sh
+```
+
+#### 4. Прямая установка через скрипт
+В корне проекта выполните:
+```bash
+./install.sh
+```
+Для удаления:
+```bash
+./uninstall.sh
+```
+
+#### 5. Запуск без установки
+Приложение можно запустить напрямую из репозитория:
 ```bash
 ./echo-weather
-# Or with a specific city:
+```
+Или указав город параметром командной строки:
+```bash
 ./echo-weather "Novokuznetsk"
 ```
 
 ---
 
-## ⌨️ Shortcuts & Controls
+## Горячие клавиши и управление
 
-| Action | Control / Shortcut |
+| Действие | Управление / Клавиша |
 | :--- | :--- |
-| **City Search** | Click search bar or press `Ctrl + F` |
-| **Inspect Hourly Metric** | Click & drag across the hourly chart / spline |
-| **Open Detail Sheet** | Click any Bento summary card on the overview |
-| **Close Detail Sheet** | Click `< Назад` (Back) button or press `Escape` |
-| **Set as Home City** | Click `🏠 Основной город` under city name or use context menu |
-| **Pin / Unpin City** | Click `📌 Закрепить` or right-click city chip in top bar |
-| **Switch Forecast Provider** | Open Settings (`⚙️`) and select Weather Model |
+| Поиск города | Клик по строке поиска или Ctrl + F |
+| Просмотр почасовых данных | Клик и перетаскивание курсора по графику |
+| Открытие аналитики | Клик по любой карточке Bento на главном экране |
+| Закрытие аналитики | Кнопка Назад или клавиша Escape |
+| Выбор основного города | Кнопка "Основной город" под названием или правый клик по вкладке |
+| Закрепление города | Кнопка "Закрепить" под названием или контекстное меню |
+| Смена модели погоды | Настройки -> Модель погоды (ECMWF, ICON, Open-Meteo, MET Norway, Консенсус) |
 
 ---
 
-## 🛠️ Development & Testing
+## Разработка и тестирование
 
-Echo Weather includes an automated test suite covering meteorological calculations, astronomy formulas, UI models, and rendering pipelines.
-
-### Setup Virtual Environment
+### Подготовка виртуального окружения
 ```bash
 python3 -m venv .venv --system-site-packages
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 ```
-*(Note: `--system-site-packages` allows the virtual environment to access system GTK4 / PyGObject bindings).*
 
-### Running Tests
+### Запуск тестов
 ```bash
 PYTHONPATH=. pytest
 ```
 
-### Running Linter
+### Проверка линтером
 ```bash
 ruff check .
 ```
 
 ---
 
-## 📚 Technical Documentation
+## Документация для разработчиков
 
-For developers interested in the internal architecture and meteorological algorithms:
-- **[SPECIFICATION.md](SPECIFICATION.md)**: Exhaustive architectural specification (state management, rendering pipeline, custom Cairo widgets, WMO weather code mapping).
-- **[REFACTORING_PLAN.md](REFACTORING_PLAN.md)**: Comprehensive refactoring roadmap and design patterns.
+- [SPECIFICATION.md](SPECIFICATION.md): Архитектурная спецификация (рендеринг, кастомные виджеты Cairo, WMO-коды).
+- [REFACTORING_PLAN.md](REFACTORING_PLAN.md): Документация по структуре модулей и оптимизациям.
 
 ---
 
-## 📄 License
+## Лицензия
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+Проект распространяется под лицензией **GNU General Public License v3.0 (GPL-3.0)**. Текст лицензии доступен в файле [LICENSE](LICENSE).
