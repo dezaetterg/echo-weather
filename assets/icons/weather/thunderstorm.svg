@@ -1,0 +1,5 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M38 28H14C9.58172 28 6 24.4183 6 20C6 15.8485 9.16016 12.4357 13.2081 12.0416C14.6738 6.8277 19.4673 3 25.1429 3C31.5796 3 36.8974 7.8967 37.6433 14.1582C40.6698 14.8752 42.8571 17.5937 42.8571 20.8571C42.8571 24.8019 39.6619 28 35.7143 28H38Z" fill="white" opacity="0.85"/>
+  <!-- Lightning Bolt -->
+  <path d="M23 27L16 37H23L21 45L31 34H24L26 27H23Z" fill="#FFD600" stroke="#FFB300" stroke-width="1" stroke-linejoin="round"/>
+</svg>

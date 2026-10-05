@@ -1,0 +1,2929 @@
+/* Echo Weather - Standalone Application Styles */
+window.weather-window {
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
+    transition: background 0.35s ease;
+}
+
+headerbar.weather-headerbar,
+.weather-headerbar {
+    background-color: transparent;
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    min-height: 38px;
+    padding: 3px 12px;
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Dynamic Atmospheric HeaderBar & Window Backdrop Adaptations */
+window.weather-window.weather-canvas-active headerbar.weather-headerbar,
+window.weather-window.weather-canvas-active .weather-headerbar {
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+window.weather-window.weather-canvas-clouds-day {
+    background: #50708c;
+}
+window.weather-window.weather-canvas-clouds-day headerbar.weather-headerbar,
+window.weather-window.weather-canvas-clouds-day .weather-headerbar {
+    background: linear-gradient(180deg, rgba(74, 105, 134, 0.94) 0%, rgba(88, 120, 150, 0.86) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.26);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+window.weather-window.weather-canvas-clear-day {
+    background: #145ebd;
+}
+window.weather-window.weather-canvas-clear-day headerbar.weather-headerbar,
+window.weather-window.weather-canvas-clear-day .weather-headerbar {
+    background: linear-gradient(180deg, rgba(18, 92, 190, 0.94) 0%, rgba(28, 112, 218, 0.86) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.30);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+window.weather-window.weather-canvas-rain-day {
+    background: #566a80;
+}
+window.weather-window.weather-canvas-rain-day headerbar.weather-headerbar,
+window.weather-window.weather-canvas-rain-day .weather-headerbar {
+    background: linear-gradient(180deg, rgba(82, 100, 122, 0.94) 0%, rgba(96, 115, 138, 0.86) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+window.weather-window.weather-canvas-drizzle-day {
+    background: #4a5c6d;
+}
+window.weather-window.weather-canvas-drizzle-day headerbar.weather-headerbar,
+window.weather-window.weather-canvas-drizzle-day .weather-headerbar {
+    background: linear-gradient(180deg, rgba(70, 88, 105, 0.94) 0%, rgba(84, 102, 120, 0.86) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+window.weather-window.weather-canvas-clear-dusk,
+window.weather-window.weather-dusk-mode {
+    background: #152744;
+}
+window.weather-window.weather-canvas-clear-dusk headerbar.weather-headerbar,
+window.weather-window.weather-dusk-mode headerbar.weather-headerbar {
+    background: linear-gradient(180deg, rgba(20, 38, 68, 0.95) 0%, rgba(32, 56, 94, 0.88) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+window.weather-window.weather-canvas-clear-night,
+window.weather-window.weather-night-mode {
+    background: #080d19;
+}
+window.weather-window.weather-canvas-clear-night headerbar.weather-headerbar,
+window.weather-window.weather-night-mode headerbar.weather-headerbar {
+    background: linear-gradient(180deg, rgba(8, 13, 26, 0.96) 0%, rgba(14, 21, 40, 0.90) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+window.weather-window.weather-canvas-clouds-night,
+window.weather-window.weather-canvas-rain-night,
+window.weather-window.weather-canvas-drizzle-night {
+    background: #0a111c;
+}
+window.weather-window.weather-canvas-clouds-night headerbar.weather-headerbar,
+window.weather-window.weather-canvas-rain-night headerbar.weather-headerbar,
+window.weather-window.weather-canvas-drizzle-night headerbar.weather-headerbar {
+    background: linear-gradient(180deg, rgba(10, 16, 27, 0.96) 0%, rgba(16, 25, 41, 0.90) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+window.weather-window.weather-canvas-snow-day {
+    background: #5d758e;
+}
+window.weather-window.weather-canvas-snow-day headerbar.weather-headerbar {
+    background: linear-gradient(180deg, rgba(92, 116, 142, 0.95) 0%, rgba(108, 134, 162, 0.88) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+window.weather-window.weather-canvas-fog-day {
+    background: #596978;
+}
+window.weather-window.weather-canvas-fog-day headerbar.weather-headerbar {
+    background: linear-gradient(180deg, rgba(88, 104, 118, 0.95) 0%, rgba(102, 118, 134, 0.88) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+window.weather-window.weather-canvas-empty {
+    background: #145ebd;
+}
+window.weather-window.weather-canvas-empty headerbar.weather-headerbar,
+window.weather-window.weather-canvas-empty .weather-headerbar {
+    background: linear-gradient(180deg, rgba(18, 92, 190, 0.94) 0%, rgba(28, 112, 218, 0.86) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.30);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+/* Universal Liquid Glass button reset for weather window */
+window.weather-window button {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+}
+
+/* HeaderBar Window Controls */
+headerbar windowcontrols button {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    color: rgba(255, 255, 255, 0.85);
+    min-height: 24px;
+    min-width: 24px;
+    padding: 2px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+headerbar windowcontrols button:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.weather-app-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    color: #ffffff;
+}
+
+headerbar entry.weather-search-entry,
+entry.weather-search-entry,
+.weather-search-entry {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 9999px;
+    color: #ffffff;
+    padding: 3px 12px;
+    min-height: 28px;
+    min-width: 190px;
+    font-size: 13px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 6px rgba(0, 0, 0, 0.10);
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+headerbar entry.weather-search-entry:focus,
+entry.weather-search-entry:focus,
+.weather-search-entry:focus {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(125, 211, 252, 0.65);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 12px rgba(56, 189, 248, 0.30);
+}
+
+/* HeaderBar Pin Button */
+headerbar button.weather-pin-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    color: rgba(255, 255, 255, 0.70);
+    padding: 3px 6px;
+    min-height: 28px;
+    min-width: 28px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+headerbar button.weather-pin-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.32);
+    color: #ffffff;
+}
+
+headerbar button.weather-pin-btn.active {
+    background: rgba(56, 189, 248, 0.35);
+    border-color: rgba(125, 211, 252, 0.80);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 10px rgba(56, 189, 248, 0.40);
+}
+
+headerbar button.weather-pin-btn.active:hover {
+    background: rgba(56, 189, 248, 0.48);
+    border-color: rgba(186, 230, 253, 0.95);
+    color: #ffffff;
+}
+
+/* HeaderBar Main City (Home) Button */
+headerbar button.weather-home-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    color: rgba(255, 255, 255, 0.70);
+    padding: 3px 6px;
+    min-height: 28px;
+    min-width: 28px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+headerbar button.weather-home-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.32);
+    color: #ffffff;
+}
+
+headerbar button.weather-home-btn.active {
+    background: rgba(234, 179, 8, 0.35);
+    border-color: rgba(250, 204, 21, 0.85);
+    color: #fef08a;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 12px rgba(234, 179, 8, 0.45);
+}
+
+headerbar button.weather-home-btn.active:hover {
+    background: rgba(234, 179, 8, 0.48);
+    border-color: rgba(254, 240, 138, 0.95);
+    color: #ffffff;
+}
+
+/* HeaderBar App Title Button (Echo Weather navigation to empty state) */
+button.weather-title-btn {
+    background: transparent;
+    background-image: none;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 10px;
+    box-shadow: none;
+    transition: background 0.18s ease, transform 0.15s ease;
+}
+
+button.weather-title-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+button.weather-title-btn:active {
+    background: rgba(255, 255, 255, 0.20);
+    transform: scale(0.98);
+}
+
+/* Cities Strip ScrolledWindow */
+.weather-cities-scroll {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.weather-cities-scroll scrollbar {
+    background: transparent;
+    border: none;
+    min-height: 3px;
+    opacity: 0.5;
+}
+
+.weather-cities-scroll scrollbar slider {
+    min-height: 3px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.weather-cities-scroll scrollbar slider:hover {
+    background: rgba(255, 255, 255, 0.50);
+}
+
+.weather-cities-strip {
+    padding: 1px 0;
+}
+
+button.city-pill-btn,
+.city-pill-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 9999px;
+    padding: 3px 12px;
+    min-height: 28px;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+button.city-pill-btn:hover,
+.city-pill-btn:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.38);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+button.city-pill-btn.active,
+.city-pill-btn.active {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(56, 189, 248, 0.28);
+    border: 1px solid rgba(125, 211, 252, 0.70);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 14px rgba(56, 189, 248, 0.35);
+}
+
+button.city-pill-btn.active:hover,
+.city-pill-btn.active:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(56, 189, 248, 0.38);
+    border-color: rgba(186, 230, 253, 0.90);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 18px rgba(56, 189, 248, 0.50);
+}
+
+.city-pill-btn .weather-main-city-icon {
+    color: #fde047;
+}
+
+button.city-pill-btn.is-main-city,
+.city-pill-btn.is-main-city {
+    border-color: rgba(250, 204, 21, 0.40);
+}
+
+.weather-search-popover .weather-popover-list {
+    min-width: 290px;
+}
+
+.weather-search-popover-scrolled {
+    background: transparent;
+}
+
+/* Empty State View (Radiant Sunny Liquid Glass) */
+.weather-empty-root {
+    padding: 32px 20px;
+}
+
+.weather-empty-card {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 28px;
+    padding: 34px 44px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.50), 0 20px 48px rgba(10, 45, 95, 0.22);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weather-empty-icon-stack {
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.weather-empty-animated-icon {
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.22));
+}
+
+.weather-empty-title {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin-top: 2px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.weather-empty-subtitle {
+    color: rgba(255, 255, 255, 0.90);
+    font-size: 13.5px;
+    line-height: 1.55;
+    font-weight: 400;
+    margin-bottom: 8px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+
+button.weather-empty-search-btn,
+.weather-empty-search-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 9999px;
+    padding: 9px 26px;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: background 0.20s ease, border-color 0.20s ease, box-shadow 0.20s ease, color 0.20s ease;
+}
+
+button.weather-empty-search-btn:hover,
+.weather-empty-search-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.70);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 24px rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+}
+
+.weather-empty-chips-box {
+    margin-top: 8px;
+}
+
+button.weather-empty-chip,
+.weather-empty-chip {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 9999px;
+    padding: 5px 14px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+button.weather-empty-chip:hover,
+.weather-empty-chip:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.50);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+button.weather-empty-lang-btn,
+.weather-empty-lang-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 9999px;
+    padding: 4px 12px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+button.weather-empty-lang-btn:hover,
+.weather-empty-lang-btn:hover {
+    background: rgba(255, 255, 255, 0.26);
+    border-color: rgba(255, 255, 255, 0.48);
+    color: #ffffff;
+}
+
+.weather-lang-popover-scrolled {
+    background: transparent;
+    padding: 2px 0;
+}
+
+headerbar button.unit-toggle-btn,
+button.unit-toggle-btn,
+.unit-toggle-btn,
+headerbar button.source-toggle-btn,
+button.source-toggle-btn,
+.source-toggle-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 9999px;
+    padding: 3px 10px;
+    min-height: 28px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+headerbar button.unit-toggle-btn:hover,
+button.unit-toggle-btn:hover,
+.unit-toggle-btn:hover,
+headerbar button.source-toggle-btn:hover,
+button.source-toggle-btn:hover,
+.source-toggle-btn:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+headerbar button.weather-refresh-btn,
+button.weather-refresh-btn,
+.weather-refresh-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 9999px;
+    padding: 4px;
+    min-height: 28px;
+    min-width: 28px;
+    color: rgba(255, 255, 255, 0.90);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 6px rgba(0, 0, 0, 0.10);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+headerbar button.weather-refresh-btn:hover,
+button.weather-refresh-btn:hover,
+.weather-refresh-btn:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.38);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+
+/* ==========================================================================
+   Apple Weather Widget Preview Styles
+   ========================================================================== */
+
+.preview-weather-card {
+    border-radius: 28px;
+    padding: 22px 24px;
+    margin: 12px 14px 18px 14px;
+    min-height: 250px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Gradients for day/night and conditions */
+.weather-grad-clear-night {
+    background: linear-gradient(175deg, #13172e 0%, #171d38 45%, #1b2446 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.weather-grad-clear-day {
+    background: linear-gradient(175deg, #1e6bd6 0%, #3084e8 50%, #5ba2f8 100%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.weather-grad-clouds-night {
+    background: linear-gradient(175deg, #161b26 0%, #202737 55%, #2a3348 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-grad-clouds-day {
+    background: linear-gradient(175deg, #3d5875 0%, #526f8e 55%, #6a8ba8 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weather-grad-rain-night,
+.weather-grad-rain-day {
+    background: linear-gradient(175deg, #1c2734 0%, #27374a 55%, #354961 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.weather-grad-snow-night,
+.weather-grad-snow-day {
+    background: linear-gradient(175deg, #2b3b4f 0%, #3e536c 55%, #567291 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.weather-grad-storm-night,
+.weather-grad-storm-day {
+    background: linear-gradient(175deg, #191c2b 0%, #262940 55%, #393b5a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.weather-grad-fog-night,
+.weather-grad-fog-day {
+    background: linear-gradient(175deg, #2b323c 0%, #3b4452 55%, #4f5b6c 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Card typography matching Apple SF Pro */
+.weather-card-city {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+}
+
+.weather-card-arrow {
+    margin-left: 2px;
+    margin-top: 2px;
+    opacity: 0.95;
+}
+
+.weather-card-temp {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 68px;
+    font-weight: 400;
+    color: #ffffff;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-top: 2px;
+    margin-bottom: 22px;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.weather-card-condition-icon {
+    margin-bottom: 6px;
+}
+
+.weather-card-condition {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.weather-card-range {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.92);
+    margin-top: 2px;
+}
+
+/* Settings text entry */
+.settings-entry {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: #ffffff;
+    font-family: "SF Pro Text", "Inter", sans-serif;
+    font-size: 13px;
+    min-width: 150px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-entry:focus {
+    border-color: #3b82f6;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ==========================================================================
+   Full Atmospheric iOS Weather Screen & Glass Cards
+   ========================================================================== */
+
+.capsule-window-ui .preview-panel.preview-panel-weather,
+.preview-panel.preview-panel-weather {
+    padding: 0;
+    margin: 0;
+    border-radius: 0 0 24px 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Full Atmospheric Weather Canvas */
+.capsule-window-ui {
+    transition: background 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+.capsule-window-ui.weather-canvas-clear-day {
+    background: radial-gradient(circle at 75% 0%, rgba(255, 235, 175, 0.45) 0%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, #1c72e8 0%, #2f87ea 35%, #4fa3f7 70%, #68b5fd 100%);
+}
+.capsule-window-ui.weather-canvas-clear-dusk {
+    background: linear-gradient(180deg, #17375e 0%, #29426f 20%, #424e78 40%, #585581 60%, #746476 80%, #9a6d6a 100%);
+}
+.capsule-window-ui.weather-canvas-clear-night {
+    background: radial-gradient(circle at 78% 8%, rgba(180, 205, 255, 0.22) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #0a0d1a 0%, #11172e 40%, #16203d 75%, #1c274b 100%);
+}
+.capsule-window-ui.weather-canvas-clouds-day {
+    background: radial-gradient(circle at 60% 0%, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #3c4a54 0%, #4a5c68 40%, #5d717e 75%, #6a808e 100%);
+}
+.capsule-window-ui.weather-canvas-clouds-night {
+    background: linear-gradient(180deg, #11151c 0%, #1a202a 40%, #222a38 75%, #2a3444 100%);
+}
+.capsule-window-ui.weather-canvas-rain-day {
+    background: radial-gradient(circle at 65% 0%, rgba(160, 200, 230, 0.25) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #233444 0%, #2e4458 40%, #3a546d 75%, #466480 100%);
+}
+.capsule-window-ui.weather-canvas-rain-night {
+    background: linear-gradient(180deg, #0c1219 0%, #131c26 40%, #1c2735 75%, #233142 100%);
+}
+.capsule-window-ui.weather-canvas-drizzle-day {
+    background: radial-gradient(circle at 75% 10%, rgba(255, 255, 255, 0.30) 0%, rgba(200, 225, 255, 0.14) 25%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, #6c8096 0%, #586c82 35%, #46586d 70%, #354556 100%);
+}
+.capsule-window-ui.weather-canvas-drizzle-night {
+    background: radial-gradient(circle at 75% 10%, rgba(180, 205, 235, 0.15) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #18222e 0%, #202c3c 45%, #2a3a4e 85%, #34465e 100%);
+}
+.capsule-window-ui.weather-canvas-storm-day,
+.capsule-window-ui.weather-canvas-storm-night {
+    background: radial-gradient(circle at 65% 0%, rgba(200, 160, 255, 0.25) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #251c38 0%, #31254a 40%, #3e305c 75%, #4c3b6f 100%);
+}
+.capsule-window-ui.weather-canvas-snow-day {
+    background: radial-gradient(circle at 65% 0%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #5b7996 0%, #708ea8 40%, #88a4bc 75%, #9cb7cd 100%);
+}
+.capsule-window-ui.weather-canvas-snow-night {
+    background: linear-gradient(180deg, #121922 0%, #1b2430 40%, #253140 75%, #2f3e50 100%);
+}
+.capsule-window-ui.weather-canvas-fog-day,
+.capsule-window-ui.weather-canvas-fog-night {
+    background: linear-gradient(180deg, #37434d 0%, #465460 40%, #566673 75%, #657785 100%);
+}
+
+/* Standalone Echo Weather window atmospheric canvases */
+window.weather-window.weather-canvas-clear-day {
+    background: radial-gradient(circle at 75% 0%, rgba(255, 235, 175, 0.45) 0%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, #1c72e8 0%, #2f87ea 35%, #4fa3f7 70%, #68b5fd 100%);
+}
+window.weather-window.weather-canvas-clear-dusk {
+    background: linear-gradient(180deg, #17375e 0%, #29426f 20%, #424e78 40%, #585581 60%, #746476 80%, #9a6d6a 100%);
+}
+window.weather-window.weather-canvas-clear-night {
+    background: radial-gradient(circle at 78% 8%, rgba(180, 205, 255, 0.22) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #0a0d1a 0%, #11172e 40%, #16203d 75%, #1c274b 100%);
+}
+window.weather-window.weather-canvas-clouds-day {
+    background: radial-gradient(circle at 60% 0%, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #3c4a54 0%, #4a5c68 40%, #5d717e 75%, #6a808e 100%);
+}
+window.weather-window.weather-canvas-clouds-night {
+    background: linear-gradient(180deg, #11151c 0%, #1a202a 40%, #222a38 75%, #2a3444 100%);
+}
+window.weather-window.weather-canvas-rain-day {
+    background: radial-gradient(circle at 65% 0%, rgba(160, 200, 230, 0.25) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #233444 0%, #2e4458 40%, #3a546d 75%, #466480 100%);
+}
+window.weather-window.weather-canvas-rain-night {
+    background: linear-gradient(180deg, #0c1219 0%, #131c26 40%, #1c2735 75%, #233142 100%);
+}
+window.weather-window.weather-canvas-drizzle-day {
+    background: radial-gradient(circle at 75% 10%, rgba(255, 255, 255, 0.30) 0%, rgba(200, 225, 255, 0.14) 25%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, #6c8096 0%, #586c82 35%, #46586d 70%, #354556 100%);
+}
+window.weather-window.weather-canvas-drizzle-night {
+    background: radial-gradient(circle at 75% 10%, rgba(180, 205, 235, 0.15) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #18222e 0%, #202c3c 45%, #2a3a4e 85%, #34465e 100%);
+}
+window.weather-window.weather-canvas-storm-day,
+window.weather-window.weather-canvas-storm-night {
+    background: radial-gradient(circle at 65% 0%, rgba(200, 160, 255, 0.25) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #251c38 0%, #31254a 40%, #3e305c 75%, #4c3b6f 100%);
+}
+window.weather-window.weather-canvas-snow-day {
+    background: radial-gradient(circle at 65% 0%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #5b7996 0%, #708ea8 40%, #88a4bc 75%, #9cb7cd 100%);
+}
+window.weather-window.weather-canvas-snow-night {
+    background: linear-gradient(180deg, #121922 0%, #1b2430 40%, #253140 75%, #2f3e50 100%);
+}
+window.weather-window.weather-canvas-fog-day,
+window.weather-window.weather-canvas-fog-night {
+    background: linear-gradient(180deg, #37434d 0%, #465460 40%, #566673 75%, #657785 100%);
+}
+
+.capsule-window-ui.weather-canvas-active .preview-weather-full-bg,
+.capsule-window-ui.weather-canvas-active .preview-panel,
+.capsule-window-ui.weather-canvas-active .preview-panel-weather,
+.capsule-window-ui.weather-canvas-active .weather-bg-clear-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-clear-dusk,
+.capsule-window-ui.weather-canvas-active .weather-bg-clear-night,
+.capsule-window-ui.weather-canvas-active .weather-bg-clouds-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-clouds-night,
+.capsule-window-ui.weather-canvas-active .weather-bg-rain-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-rain-night,
+.capsule-window-ui.weather-canvas-active .weather-bg-drizzle-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-drizzle-night,
+.capsule-window-ui.weather-canvas-active .weather-bg-storm-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-storm-night,
+.capsule-window-ui.weather-canvas-active .weather-bg-snow-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-snow-night,
+.capsule-window-ui.weather-canvas-active .weather-bg-fog-day,
+.capsule-window-ui.weather-canvas-active .weather-bg-fog-night {
+    background: transparent;
+    background-image: none;
+    box-shadow: none;
+}
+.capsule-window-ui.weather-canvas-active .preview-panel.preview-panel-weather {
+    border-left: none;
+    box-shadow: none;
+}
+
+.capsule-window-ui.weather-canvas-active .search-wrapper {
+    background-color: rgba(255, 255, 255, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.capsule-window-ui.weather-canvas-active #search-entry {
+    color: #ffffff;
+}
+.capsule-window-ui.weather-canvas-active #search-entry placeholder {
+    color: rgba(255, 255, 255, 0.65);
+}
+.capsule-window-ui.weather-canvas-active .search-icon {
+    color: rgba(255, 255, 255, 0.90);
+}
+.capsule-window-ui.weather-canvas-active .mode-button {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 9999px;
+    outline: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.20);
+    color: #ffffff;
+}
+.capsule-window-ui.weather-canvas-active .mode-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.35);
+    border-radius: 9999px;
+    outline: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.40);
+}
+.capsule-window-ui.weather-canvas-active .mode-button.active {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.45);
+    border-radius: 9999px;
+    outline: none;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.50);
+}
+.capsule-window-ui.weather-canvas-active .result-title {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.capsule-window-ui.weather-canvas-active .result-desc {
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.capsule-window-ui.weather-canvas-active .result-badge {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+.capsule-window-ui.weather-canvas-active .footer-hint,
+.capsule-window-ui.weather-canvas-active .action-pill {
+    color: rgba(255, 255, 255, 0.82);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.40);
+}
+.capsule-window-ui.weather-canvas-active .result-row:selected,
+.capsule-window-ui.weather-canvas-active .result-row.selected {
+    background-color: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.capsule-window-ui.weather-canvas-active .result-row:hover:not(:selected) {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Night Mode Glass Tweaks for Search and Controls */
+.capsule-window-ui.weather-canvas-active.weather-night-mode .search-wrapper {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.capsule-window-ui.weather-canvas-active.weather-night-mode .mode-button {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.capsule-window-ui.weather-canvas-active.weather-night-mode .result-row:selected,
+.capsule-window-ui.weather-canvas-active.weather-night-mode .result-row.selected {
+    background-color: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+/* Ambient Window Glow for Weather Conditions */
+.root-box .outer-border-box.ambient-weather-bg-clear-day,
+window.ambient-weather-bg-clear-day .outer-border-box {
+    box-shadow: 0 0 24px rgba(53, 142, 232, 0.50), 0 8px 24px rgba(0, 0, 0, 0.35);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.08) 35%, rgba(255, 255, 255, 0.08) 65%, rgba(255, 255, 255, 0.75) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-clear-dusk,
+window.ambient-weather-bg-clear-dusk .outer-border-box {
+    box-shadow: 0 0 26px rgba(113, 103, 128, 0.55), 0 8px 24px rgba(0, 0, 0, 0.40);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.80) 0%, rgba(154, 109, 106, 0.20) 50%, rgba(23, 55, 94, 0.40) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-clear-night,
+window.ambient-weather-bg-clear-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(35, 55, 110, 0.60), 0 8px 24px rgba(0, 0, 0, 0.55);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.08) 35%, rgba(255, 255, 255, 0.08) 65%, rgba(255, 255, 255, 0.75) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-clouds-day,
+.root-box .outer-border-box.ambient-weather-bg-clouds-night,
+window.ambient-weather-bg-clouds-day .outer-border-box,
+window.ambient-weather-bg-clouds-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(90, 115, 145, 0.55), 0 8px 24px rgba(0, 0, 0, 0.35);
+    background-image: linear-gradient(135deg, rgba(160, 185, 210, 0.75) 0%, rgba(130, 150, 175, 0.12) 50%, rgba(190, 205, 220, 0.55) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-rain-day,
+.root-box .outer-border-box.ambient-weather-bg-rain-night,
+window.ambient-weather-bg-rain-day .outer-border-box,
+window.ambient-weather-bg-rain-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(60, 100, 150, 0.60), 0 8px 24px rgba(0, 0, 0, 0.45);
+    background-image: linear-gradient(135deg, rgba(90, 150, 215, 0.8) 0%, rgba(60, 100, 160, 0.15) 50%, rgba(110, 180, 230, 0.55) 100%);
+}
+.root-box .outer-border-box.ambient-weather-bg-drizzle-day,
+.root-box .outer-border-box.ambient-weather-bg-drizzle-night,
+window.ambient-weather-bg-drizzle-day .outer-border-box,
+window.ambient-weather-bg-drizzle-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(85, 115, 145, 0.55), 0 8px 24px rgba(0, 0, 0, 0.40);
+    background-image: linear-gradient(135deg, rgba(200, 220, 240, 0.85) 0%, rgba(130, 160, 190, 0.15) 50%, rgba(180, 205, 230, 0.65) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-storm-day,
+.root-box .outer-border-box.ambient-weather-bg-storm-night,
+window.ambient-weather-bg-storm-day .outer-border-box,
+window.ambient-weather-bg-storm-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(130, 80, 180, 0.65), 0 8px 24px rgba(0, 0, 0, 0.55);
+    background-image: linear-gradient(135deg, rgba(175, 110, 235, 0.85) 0%, rgba(100, 60, 160, 0.15) 50%, rgba(205, 140, 255, 0.55) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-snow-day,
+.root-box .outer-border-box.ambient-weather-bg-snow-night,
+window.ambient-weather-bg-snow-day .outer-border-box,
+window.ambient-weather-bg-snow-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(170, 215, 255, 0.60), 0 8px 24px rgba(0, 0, 0, 0.35);
+    background-image: linear-gradient(135deg, rgba(215, 240, 255, 0.9) 0%, rgba(180, 220, 255, 0.15) 50%, rgba(240, 250, 255, 0.75) 100%);
+}
+
+.root-box .outer-border-box.ambient-weather-bg-fog-day,
+.root-box .outer-border-box.ambient-weather-bg-fog-night,
+window.ambient-weather-bg-fog-day .outer-border-box,
+window.ambient-weather-bg-fog-night .outer-border-box {
+    box-shadow: 0 0 24px rgba(100, 120, 135, 0.50), 0 8px 24px rgba(0, 0, 0, 0.35);
+    background-image: linear-gradient(135deg, rgba(165, 180, 195, 0.75) 0%, rgba(120, 135, 150, 0.12) 50%, rgba(185, 200, 210, 0.55) 100%);
+}
+
+.preview-panel.preview-panel-weather scrollbar {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.preview-panel.preview-panel-weather scrollbar trough {
+    background: transparent;
+    border: none;
+}
+
+.preview-panel.preview-panel-weather scrollbar {
+    background: transparent;
+    border: none;
+}
+
+.weather-scrolled-window,
+.weather-scrolled-window > viewport,
+.weather-scrolled-window viewport {
+    background: transparent;
+    background-color: transparent;
+}
+
+.weather-scrolled-window scrollbar {
+    opacity: 0;
+    background: transparent;
+    border: none;
+}
+
+.preview-panel.preview-panel-weather scrollbar slider,
+.weather-scrolled-window scrollbar slider {
+    opacity: 0;
+    min-width: 6px;
+    min-height: 6px;
+    background: transparent;
+    border: none;
+}
+
+.preview-panel.preview-panel-weather scrollbar slider:hover,
+.weather-scrolled-window scrollbar slider:hover {
+    opacity: 0;
+    background: transparent;
+}
+
+.preview-weather-full-bg {
+    background: transparent;
+    border-radius: 16px;
+    transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Atmospheric dynamic weather backgrounds */
+.capsule-window-ui .preview-panel.weather-bg-clear-day,
+.preview-panel.weather-bg-clear-day,
+.weather-bg-clear-day {
+    background: radial-gradient(circle at 75% 12%, rgba(255, 245, 205, 0.5) 0%, rgba(255, 255, 255, 0) 48%),
+                linear-gradient(180deg, #186bd8 0%, #358ee8 42%, #58a9fa 85%, #6ebbfd 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-clear-dusk,
+.preview-panel.weather-bg-clear-dusk,
+.weather-bg-clear-dusk {
+    background: linear-gradient(180deg, #17375e 0%, #29426f 20%, #424e78 40%, #585581 60%, #746476 80%, #9a6d6a 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-clear-night,
+.preview-panel.weather-bg-clear-night,
+.weather-bg-clear-night {
+    background: radial-gradient(circle at 78% 14%, rgba(190, 215, 255, 0.22) 0%, rgba(255, 255, 255, 0) 40%),
+                linear-gradient(180deg, #090c18 0%, #11172e 45%, #182244 85%, #1e2a54 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-clouds-day,
+.preview-panel.weather-bg-clouds-day,
+.weather-bg-clouds-day {
+    background: linear-gradient(180deg, #7ca8c2 0%, #93bcd4 35%, #a2c6dc 65%, #85abc0 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-clouds-night,
+.preview-panel.weather-bg-clouds-night,
+.weather-bg-clouds-night {
+    background: linear-gradient(180deg, #10141a 0%, #19202a 45%, #242d3c 85%, #2e394c 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-rain-day,
+.preview-panel.weather-bg-rain-day,
+.weather-bg-rain-day {
+    background: linear-gradient(180deg, #8f9eb3 0%, #8c9cac 25%, #7a899c 50%, #718295 75%, #5e728a 100%);
+}
+.capsule-window-ui .preview-panel.weather-bg-rain-night,
+.preview-panel.weather-bg-rain-night,
+.weather-bg-rain-night {
+    background: linear-gradient(180deg, #0c1219 0%, #131c26 40%, #1c2735 75%, #233142 100%);
+}
+.capsule-window-ui .preview-panel.weather-bg-drizzle-day,
+.preview-panel.weather-bg-drizzle-day,
+.weather-bg-drizzle-day {
+    background: radial-gradient(circle at 75% 12%, rgba(255, 255, 255, 0.28) 0%, rgba(200, 225, 255, 0.12) 25%, rgba(255, 255, 255, 0) 55%),
+                linear-gradient(180deg, #6c8096 0%, #586c82 35%, #46586d 70%, #354556 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-drizzle-night,
+.preview-panel.weather-bg-drizzle-night,
+.weather-bg-drizzle-night {
+    background: radial-gradient(circle at 75% 12%, rgba(180, 205, 235, 0.15) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #18222e 0%, #202c3c 45%, #2a3a4e 85%, #34465e 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-storm-day,
+.capsule-window-ui .preview-panel.weather-bg-storm-night,
+.preview-panel.weather-bg-storm-day,
+.preview-panel.weather-bg-storm-night,
+.weather-bg-storm-day,
+.weather-bg-storm-night {
+    background: radial-gradient(circle at 50% 10%, rgba(210, 190, 255, 0.15) 0%, rgba(255, 255, 255, 0) 45%),
+                linear-gradient(180deg, #141220 0%, #1e1a32 45%, #2c2548 85%, #382f5b 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-snow-day,
+.capsule-window-ui .preview-panel.weather-bg-snow-night,
+.preview-panel.weather-bg-snow-day,
+.preview-panel.weather-bg-snow-night,
+.weather-bg-snow-day,
+.weather-bg-snow-night {
+    background: radial-gradient(circle at 70% 12%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #2c3e50 0%, #3e5368 45%, #526c85 85%, #6885a1 100%);
+}
+
+.capsule-window-ui .preview-panel.weather-bg-fog-day,
+.capsule-window-ui .preview-panel.weather-bg-fog-night,
+.preview-panel.weather-bg-fog-day,
+.preview-panel.weather-bg-fog-night,
+.weather-bg-fog-day,
+.weather-bg-fog-night {
+    background: linear-gradient(180deg, #2b333c 0%, #3c4652 45%, #505c6a 85%, #637180 100%);
+}
+
+/* Weather content padding */
+.weather-content-pad {
+    padding: 14px 14px 22px 14px;
+}
+
+.weather-glass-card.weather-card-clickable {
+    transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-glass-card.weather-card-clickable:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Hero Section - Asymmetric Cockpit Plate */
+.weather-hero-cockpit {
+    padding: 16px 20px;
+    margin-bottom: 4px;
+}
+
+.weather-hero-telemetry-col {
+    margin: 0;
+}
+
+.weather-hero-city {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.weather-hero-coord-tag {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+
+.weather-hero-coord-text {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.2px;
+}
+
+.weather-hero-action-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 9999px;
+    padding: 2px 10px;
+    color: rgba(255, 255, 255, 0.90);
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 180ms ease;
+    min-height: 22px;
+}
+
+.weather-hero-action-btn:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.40);
+    color: #ffffff;
+}
+
+.weather-hero-action-btn.active {
+    background: rgba(255, 215, 0, 0.25);
+    border-color: rgba(255, 215, 0, 0.60);
+    color: #ffd700;
+}
+
+.weather-hero-temp {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 72px;
+    font-weight: 300;
+    color: #ffffff;
+    letter-spacing: -1.5px;
+    line-height: 1.0;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+}
+
+.weather-hero-condition {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.weather-hero-trend-text {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.1px;
+}
+
+.weather-hero-extremes {
+    margin-top: 4px;
+}
+
+.weather-hero-chips-row {
+    margin-top: 4px;
+}
+
+.weather-hero-chip {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 6px;
+    padding: 3px 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+.weather-hero-chip-text {
+    font-family: "SF Pro Text", "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.1px;
+}
+
+.weather-hero-art-col {
+    min-width: 120px;
+}
+
+.weather-hero-art-frame {
+    padding: 4px;
+}
+
+.weather-hero-model-tag {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    padding: 2px 8px;
+}
+
+.weather-hero-model-text {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.4px;
+    text-transform: none;
+}
+
+/* Frosted Glass Cards */
+.weather-glass-card {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-summary-text {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.35;
+    letter-spacing: -0.1px;
+}
+
+.weather-card-divider {
+    min-height: 1px;
+    background: rgba(255, 255, 255, 0.14);
+    margin: 4px 0 6px 0;
+}
+
+.weather-row-divider {
+    min-height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 3px 0;
+}
+
+/* Hourly Forecast Strip */
+.weather-hourly-box {
+    padding: 4px 0 2px 0;
+}
+
+.weather-hourly-col {
+    min-width: 44px;
+}
+
+.weather-hourly-time {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.weather-hourly-temp {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+/* 10-Day Forecast Columns Rail */
+.weather-section-title {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.2px;
+    text-transform: none;
+}
+
+.weather-daily-columns-card {
+    padding: 12px 14px 14px 14px;
+}
+
+.weather-daily-scroll-rail {
+    padding: 2px 0 4px 0;
+}
+
+.weather-daily-rail-box {
+    margin: 0;
+}
+
+.weather-day-column {
+    min-width: 68px;
+    padding: 8px 6px 10px 6px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.weather-day-column:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.weather-day-column-today {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: rgba(125, 211, 252, 0.40);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.weather-day-col-name {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.1px;
+}
+
+.weather-day-col-date {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.60);
+    margin-top: -3px;
+}
+
+.weather-day-col-precip {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+.weather-day-col-temp-max {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.weather-day-col-temp-min {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.weather-daily-row {
+    padding: 3px 0;
+}
+
+.weather-daily-day {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.1px;
+}
+
+.weather-daily-temp-min {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.weather-daily-temp-max {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+
+/* Atmospheric Telemetry Strip & Asymmetric Deck */
+.weather-dashboard-deck {
+    margin: 0 0 12px 0;
+}
+
+.weather-telemetry-strip {
+    padding: 10px 6px;
+}
+
+.weather-telemetry-cell {
+    padding: 6px 12px;
+    border-radius: 10px;
+    transition: background 0.16s ease;
+}
+
+.weather-telemetry-cell:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.weather-telemetry-vdivider {
+    min-width: 1px;
+    background: rgba(255, 255, 255, 0.14);
+    margin: 4px 2px;
+}
+
+.weather-telemetry-key {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.2px;
+    text-transform: none;
+}
+
+.weather-telemetry-val {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.weather-telemetry-sub {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.70);
+}
+
+.weather-bento-wide-card {
+    min-height: 110px;
+}
+
+.weather-telemetry-card {
+    border-radius: 10px;
+    padding: 12px 14px;
+    min-height: 105px;
+}
+
+.weather-telemetry-full-card {
+    border-radius: 10px;
+    padding: 12px 16px;
+    min-height: 72px;
+}
+
+.weather-meta-grid {
+    margin: 2px 0 8px 0;
+}
+
+.weather-meta-grid .preview-meta-card {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.weather-meta-grid .preview-meta-key {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.weather-meta-grid .preview-meta-val {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Apple Weather Bento Grid */
+.weather-bento-grid {
+    margin: 4px 0 10px 0;
+}
+
+.weather-bento-card {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    min-height: 105px;
+}
+
+/* Interactive Bento Card with Liquid Glass Hover (Preserves 10px radius & grid spacing) */
+.weather-bento-card-interactive {
+    margin: 0;
+    border-radius: 10px;
+    transition: background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+.weather-bento-card-interactive:active {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.20);
+}
+
+/* Subtle Chevron Cue in Bento Header (Idea 1) */
+.weather-bento-chevron {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.35);
+    margin-right: 2px;
+    transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.weather-bento-card-interactive:hover .weather-bento-chevron {
+    color: rgba(255, 255, 255, 0.95);
+    transform: translateX(2px);
+}
+
+/* Theme-Adaptive Bento Card Hover (Idea 4) */
+.weather-bg-clear-day .weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.26);
+    border-color: rgba(255, 240, 205, 0.50);
+    box-shadow: 0 10px 28px rgba(15, 60, 125, 0.28), inset 0 1px 0 rgba(255, 245, 220, 0.55);
+}
+
+.weather-bg-clouds-day .weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(225, 238, 255, 0.45);
+    box-shadow: 0 10px 28px rgba(22, 40, 62, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.weather-bg-rain-day .weather-bento-card-interactive:hover,
+.weather-bg-rain-night .weather-bento-card-interactive:hover,
+.weather-bg-drizzle-day .weather-bento-card-interactive:hover,
+.weather-bg-drizzle-night .weather-bento-card-interactive:hover,
+.weather-bg-storm-day .weather-bento-card-interactive:hover,
+.weather-bg-storm-night .weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(175, 225, 255, 0.45);
+    box-shadow: 0 10px 28px rgba(10, 28, 50, 0.35), inset 0 1px 0 rgba(190, 230, 255, 0.45);
+}
+
+.weather-bg-clear-night .weather-bento-card-interactive:hover,
+.weather-bg-clouds-night .weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.20);
+    border-color: rgba(195, 215, 255, 0.42);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+.weather-bg-snow-day .weather-bento-card-interactive:hover,
+.weather-bg-snow-night .weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(235, 248, 255, 0.55);
+    box-shadow: 0 10px 28px rgba(40, 70, 100, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.60);
+}
+
+.weather-bg-fog-day .weather-bento-card-interactive:hover,
+.weather-bg-fog-night .weather-bento-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(230, 235, 245, 0.40);
+    box-shadow: 0 10px 26px rgba(35, 42, 50, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+.weather-bento-header {
+    margin-bottom: 2px;
+}
+
+.weather-bento-title {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.2px;
+    text-transform: none;
+}
+
+.weather-bento-val-large {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.1;
+    letter-spacing: -0.4px;
+}
+
+.weather-bento-val-hero {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.0;
+    letter-spacing: -0.5px;
+}
+
+.weather-bento-val-level {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 2px;
+}
+
+.weather-bento-subval {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.weather-bento-sublabel {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.weather-bento-unit {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.2px;
+    text-transform: none;
+}
+
+.weather-bento-desc {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.35;
+    margin-top: 4px;
+}
+
+.weather-bento-moon-title {
+    font-family: "SF Pro Display", "Inter", -apple-system, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.weather-bento-moon-info {
+    font-family: "SF Pro Text", "Inter", -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
+    margin-top: 2px;
+}
+
+.weather-bento-divider {
+    min-height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 4px 0;
+}
+
+.weather-action-box {
+    margin: 6px 0 16px 0;
+}
+
+.weather-action-box .preview-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    font-weight: 600;
+}
+
+.weather-action-box .preview-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.36);
+}
+
+
+/* Quick Look Text & Code Editor */
+.quick-look-editor-card {
+    background: rgba(18, 19, 24, 0.70);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    margin: 2px 14px 10px 14px;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+.quick-look-editor-toolbar {
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 14px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.quick-look-editor-stat {
+    font-family: "SF Pro Text", "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+}
+.quick-look-editor-dirty-badge {
+    font-family: "SF Pro Text", "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffaa55;
+    background: rgba(255, 170, 85, 0.18);
+    border: 1px solid rgba(255, 170, 85, 0.35);
+    border-radius: 9999px;
+    padding: 1px 9px;
+}
+.quick-look-editor-saved-badge {
+    font-family: "SF Pro Text", "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #56d364;
+    background: rgba(86, 211, 100, 0.18);
+    border: 1px solid rgba(86, 211, 100, 0.35);
+    border-radius: 9999px;
+    padding: 1px 9px;
+}
+.quick-look-save-btn {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: "SF Pro Text", "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    transition: background 150ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.quick-look-save-btn:hover {
+    background: rgba(255, 255, 255, 0.20);
+    border-color: rgba(255, 255, 255, 0.40);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+}
+.quick-look-save-btn.dirty {
+    background: #238636;
+    border-color: #3fb950;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(46, 160, 67, 0.50);
+}
+.quick-look-save-btn.dirty:hover {
+    background: #2ea043;
+    box-shadow: 0 0 16px rgba(46, 160, 67, 0.70);
+}
+.quick-look-line-numbers-scroll {
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom-left-radius: 15px;
+}
+.quick-look-line-numbers-scroll scrollbar {
+    opacity: 0;
+    min-width: 0;
+    min-height: 0;
+}
+.quick-look-line-numbers {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.32);
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Source Code Pro", monospace;
+    font-size: 13px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 10px 16px 12px;
+}
+.quick-look-readonly-badge {
+    background: rgba(210, 153, 34, 0.20);
+    color: #d29922;
+    border: 1px solid rgba(210, 153, 34, 0.40);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.quick-look-code-view {
+    background: transparent;
+    color: #e6edf3;
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Source Code Pro", monospace;
+    font-size: 13px;
+    padding: 12px 16px 16px 16px;
+    caret-color: #58a6ff;
+}
+.quick-look-code-view:focus {
+    outline: none;
+}
+
+
+/* =============================================================================
+   ACTION FOOTER BAR & KEYBOARD SHORTCUT BADGES
+   ============================================================================= */
+
+.action-footer-bar {
+    padding: 4px 6px 2px 6px;
+    margin: 0;
+    min-height: 26px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.action-bar-separator {
+    margin: 4px 2px 3px 2px;
+    min-height: 1px;
+    opacity: 0.14;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.action-pills-container {
+    margin: 0;
+    padding: 0;
+}
+
+.action-meta-container {
+    margin: 0;
+    padding: 0;
+}
+
+.action-pill-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 3px 7px;
+    border-radius: 8px;
+    transition: background 140ms cubic-bezier(0.16, 1, 0.3, 1),
+                transform 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.action-pill-btn:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.action-pill-btn:active {
+    transform: scale(0.97);
+}
+
+.kbd-badge {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, monospace, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 5px;
+    min-width: 14px;
+}
+
+.action-pill-text {
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+}
+
+/* Alt + 1..9 Numeric badges on search rows */
+.alt-shortcut-badge {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, monospace, sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 5px;
+    margin-right: 8px;
+    opacity: 0.45;
+    transition: opacity 140ms ease, background-color 140ms ease;
+}
+
+row:hover .alt-shortcut-badge,
+.result-row:hover .alt-shortcut-badge,
+row:selected .alt-shortcut-badge,
+.result-row:selected .alt-shortcut-badge {
+    opacity: 0.90;
+}
+
+/* ==========================================================================
+   Weather Detail Sheet (macOS / iOS Weather Detailed Day View)
+   ========================================================================== */
+
+.weather-daily-row-clickable {
+    /* cursor handled via GTK API */
+    border-radius: 8px;
+    padding: 3px 6px;
+    margin: 0 -6px;
+    transition: background 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-daily-row-clickable:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.weather-detail-view {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.weather-nav-bar {
+    padding: 16px 16px 8px 16px;
+    background: transparent;
+}
+
+button.weather-back-btn,
+.weather-back-btn {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 9999px;
+    padding: 6px 14px;
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: background 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button.weather-back-btn:hover,
+.weather-back-btn:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.38);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.weather-back-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.weather-nav-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.weather-detail-scroll {
+    background: transparent;
+}
+
+.weather-detail-content {
+    padding: 4px 14px 24px 14px;
+}
+
+.weather-day-strip {
+    padding: 4px 0 6px 0;
+}
+
+button.weather-day-pill,
+.weather-day-pill,
+.weather-day-tab {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 6px 12px;
+    min-width: 44px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+button.weather-day-pill:hover:not(.weather-day-pill-active),
+.weather-day-pill:hover:not(.weather-day-pill-active),
+.weather-day-tab:hover:not(.weather-day-tab-active) {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.20);
+    border-color: rgba(255, 255, 255, 0.30);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30);
+}
+
+button.weather-day-pill-active,
+.weather-day-pill.weather-day-pill-active,
+.weather-day-pill-active,
+.weather-day-tab-active {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(56, 189, 248, 0.28);
+    border: 1px solid rgba(125, 211, 252, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 2px 12px rgba(56, 189, 248, 0.32);
+}
+
+.weather-pill-letter,
+.weather-tab-letter {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.weather-day-pill-active .weather-pill-letter,
+.weather-day-tab-active .weather-tab-letter {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.weather-pill-num,
+.weather-tab-num {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.weather-detail-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 2px;
+}
+
+.weather-detail-scrub-time {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.2px;
+}
+
+.weather-detail-hero-row {
+    padding: 4px 0;
+}
+
+.weather-detail-hero-temp {
+    font-size: 34px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.weather-detail-hero-extremes {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Container MenuButton reset */
+menubutton.weather-metric-pill-btn,
+.weather-metric-pill-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Inner Toggle Button styling (Single Pill) */
+menubutton.weather-metric-pill-btn > button,
+.weather-metric-pill-btn > button {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 14px;
+    padding: 4px 10px;
+    color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: background 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+menubutton.weather-metric-pill-btn > button:hover,
+.weather-metric-pill-btn > button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.38);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+menubutton.weather-metric-pill-btn > button:active,
+menubutton.weather-metric-pill-btn > button:checked,
+.weather-metric-pill-btn > button:active,
+.weather-metric-pill-btn > button:checked {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.weather-metric-pill {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.weather-metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Base Popover */
+.weather-metric-popover {
+    background: transparent;
+}
+
+.weather-metric-popover contents {
+    background: rgba(26, 36, 52, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 16px;
+    padding: 6px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.weather-metric-popover > arrow {
+    background: rgba(26, 36, 52, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.weather-popover-list {
+    min-width: 220px;
+}
+
+.weather-popover-item {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 7px 10px;
+    color: rgba(255, 255, 255, 0.85);
+    transition: background 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.weather-popover-item:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.20);
+    color: #ffffff;
+}
+
+.weather-popover-item-active {
+    background: rgba(43, 130, 236, 0.32);
+    border-color: rgba(100, 180, 255, 0.45);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Theme-Adaptive Popover & Pill Button (Frosted Liquid Glass Matching Sky)
+   ========================================================================== */
+
+/* Clear Dusk (Sunset Twilight Frosted Glass) */
+.weather-metric-popover.weather-bg-clear-dusk contents {
+    background: rgba(73, 79, 129, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 18px 45px rgba(23, 55, 94, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.weather-metric-popover.weather-bg-clear-dusk > arrow {
+    background: rgba(73, 79, 129, 0.92);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.weather-metric-popover.weather-bg-clear-dusk .weather-popover-item:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.weather-metric-popover.weather-bg-clear-dusk .weather-popover-item-active {
+    background: rgba(154, 109, 106, 0.40);
+    border-color: rgba(255, 255, 255, 0.50);
+    color: #ffffff;
+}
+
+.weather-metric-popover.weather-bg-clear-dusk .weather-popover-desc {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+menubutton.weather-metric-pill-btn.weather-bg-clear-dusk > button,
+.weather-metric-pill-btn.weather-bg-clear-dusk > button {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 2px 10px rgba(23, 55, 94, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+menubutton.weather-metric-pill-btn.weather-bg-clear-dusk > button:hover,
+.weather-metric-pill-btn.weather-bg-clear-dusk > button:hover {
+    background: rgba(255, 255, 255, 0.32);
+    border-color: rgba(255, 255, 255, 0.50);
+}
+
+/* 1. Clear Day (Daylight Azure Frosted Glass) */
+.weather-metric-popover.weather-bg-clear-day contents {
+    background: rgba(36, 88, 154, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 18px 45px rgba(10, 45, 95, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+.weather-metric-popover.weather-bg-clear-day > arrow {
+    background: rgba(36, 88, 154, 0.88);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.weather-metric-popover.weather-bg-clear-day .weather-popover-item:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.weather-metric-popover.weather-bg-clear-day .weather-popover-item-active {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+}
+
+.weather-metric-popover.weather-bg-clear-day .weather-popover-desc {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+menubutton.weather-metric-pill-btn.weather-bg-clear-day > button,
+.weather-metric-pill-btn.weather-bg-clear-day > button {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 2px 10px rgba(15, 60, 120, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+menubutton.weather-metric-pill-btn.weather-bg-clear-day > button:hover,
+.weather-metric-pill-btn.weather-bg-clear-day > button:hover {
+    background: rgba(255, 255, 255, 0.32);
+    border-color: rgba(255, 255, 255, 0.50);
+}
+
+/* 2. Clouds Day (Slate Blue Daylight Frosted Glass) */
+.weather-metric-popover.weather-bg-clouds-day contents {
+    background: rgba(54, 74, 98, 0.90);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 18px 45px rgba(15, 30, 48, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.weather-metric-popover.weather-bg-clouds-day > arrow {
+    background: rgba(54, 74, 98, 0.90);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.weather-metric-popover.weather-bg-clouds-day .weather-popover-item:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.weather-metric-popover.weather-bg-clouds-day .weather-popover-item-active {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.40);
+}
+
+.weather-metric-popover.weather-bg-clouds-day .weather-popover-desc {
+    color: rgba(255, 255, 255, 0.68);
+}
+
+/* 3. Rain & Storm (Deep Oceanic Slate Frosted Glass) */
+.weather-metric-popover.weather-bg-rain-day contents,
+.weather-metric-popover.weather-bg-rain-night contents,
+.weather-metric-popover.weather-bg-drizzle-day contents,
+.weather-metric-popover.weather-bg-drizzle-night contents,
+.weather-metric-popover.weather-bg-storm-day contents,
+.weather-metric-popover.weather-bg-storm-night contents {
+    background: rgba(28, 44, 66, 0.92);
+    border: 1px solid rgba(180, 220, 255, 0.25);
+    box-shadow: 0 18px 45px rgba(5, 18, 35, 0.55), inset 0 1px 0 rgba(200, 230, 255, 0.30);
+}
+
+.weather-metric-popover.weather-bg-rain-day > arrow,
+.weather-metric-popover.weather-bg-rain-night > arrow,
+.weather-metric-popover.weather-bg-drizzle-day > arrow,
+.weather-metric-popover.weather-bg-drizzle-night > arrow,
+.weather-metric-popover.weather-bg-storm-day > arrow,
+.weather-metric-popover.weather-bg-storm-night > arrow {
+    background: rgba(28, 44, 66, 0.92);
+    border-color: rgba(180, 220, 255, 0.25);
+}
+
+.weather-metric-popover.weather-bg-rain-day .weather-popover-item-active,
+.weather-metric-popover.weather-bg-rain-night .weather-popover-item-active,
+.weather-metric-popover.weather-bg-drizzle-day .weather-popover-item-active,
+.weather-metric-popover.weather-bg-drizzle-night .weather-popover-item-active,
+.weather-metric-popover.weather-bg-storm-day .weather-popover-item-active,
+.weather-metric-popover.weather-bg-storm-night .weather-popover-item-active {
+    background: rgba(56, 138, 224, 0.35);
+    border-color: rgba(140, 200, 255, 0.45);
+}
+
+/* 4. Clear Night & Clouds Night (Deep Sapphire Frosted Glass) */
+.weather-metric-popover.weather-bg-clear-night contents,
+.weather-metric-popover.weather-bg-clouds-night contents {
+    background: rgba(18, 24, 38, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.weather-metric-popover.weather-bg-clear-night > arrow,
+.weather-metric-popover.weather-bg-clouds-night > arrow {
+    background: rgba(18, 24, 38, 0.94);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.weather-metric-popover.weather-bg-clear-night .weather-popover-item-active,
+.weather-metric-popover.weather-bg-clouds-night .weather-popover-item-active {
+    background: rgba(60, 110, 190, 0.35);
+    border-color: rgba(100, 160, 255, 0.45);
+}
+
+/* 5. Snow (Icy Crystalline Frosted Glass) */
+.weather-metric-popover.weather-bg-snow-day contents,
+.weather-metric-popover.weather-bg-snow-night contents {
+    background: rgba(55, 75, 102, 0.88);
+    border: 1px solid rgba(235, 248, 255, 0.35);
+    box-shadow: 0 18px 45px rgba(25, 45, 70, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.weather-metric-popover.weather-bg-snow-day > arrow,
+.weather-metric-popover.weather-bg-snow-night > arrow {
+    background: rgba(55, 75, 102, 0.88);
+    border-color: rgba(235, 248, 255, 0.35);
+}
+
+/* 6. Fog (Misty Pearl Frosted Glass) */
+.weather-metric-popover.weather-bg-fog-day contents,
+.weather-metric-popover.weather-bg-fog-night contents {
+    background: rgba(65, 75, 88, 0.90);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 18px 45px rgba(20, 25, 32, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.30);
+}
+
+.weather-metric-popover.weather-bg-fog-day > arrow,
+.weather-metric-popover.weather-bg-fog-night > arrow {
+    background: rgba(65, 75, 88, 0.90);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.weather-popover-title {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.weather-popover-desc {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.50);
+}
+
+.weather-uv-badge {
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.weather-uv-low {
+    background: rgba(52, 199, 89, 0.25);
+    color: #34c759;
+    border: 1px solid rgba(52, 199, 89, 0.4);
+}
+
+.weather-uv-mod {
+    background: rgba(255, 214, 10, 0.25);
+    color: #ffd60a;
+    border: 1px solid rgba(255, 214, 10, 0.4);
+}
+
+.weather-uv-high {
+    background: rgba(255, 159, 10, 0.25);
+    color: #ff9f0a;
+    border: 1px solid rgba(255, 159, 10, 0.4);
+}
+
+.weather-uv-very-high {
+    background: rgba(255, 69, 58, 0.25);
+    color: #ff453a;
+    border: 1px solid rgba(255, 69, 58, 0.4);
+}
+
+.weather-uv-extreme {
+    background: rgba(191, 90, 242, 0.25);
+    color: #bf5af2;
+    border: 1px solid rgba(191, 90, 242, 0.4);
+}
+
+.weather-card-hero-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.weather-card-hero-unit {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 2px;
+}
+
+.segmented-control {
+    background: rgba(0, 0, 0, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 9999px;
+    padding: 3px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+button.segmented-btn,
+.segmented-btn {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    border-radius: 9999px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.70);
+    box-shadow: none;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+button.segmented-btn:hover,
+.segmented-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.10);
+}
+
+button.segmented-btn-active,
+.segmented-btn-active {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 8px rgba(0, 0, 0, 0.20);
+}
+
+.segmented-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+}
+
+.weather-card-subtitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.weather-footnote {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.3;
+}
+
+.weather-body-text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.45;
+}
+
+.weather-item-caption {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.weather-item-bold {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+
+/* Weather Chart Dynamic Summary (Step 2) */
+.weather-chart-summary-box {
+    padding: 6px 4px 4px 4px;
+}
+
+.weather-chart-summary-time {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.weather-chart-summary-text {
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.90);
+    font-weight: 400;
+}
+
+
+/* Weather Climate Averages Styles */
+.weather-averages-hero-box {
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.weather-averages-hero-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+}
+
+.weather-averages-hero-sub {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.70);
+    margin-top: 2px;
+}
+
+.climate-monthly-table {
+    padding: 4px 0;
+}
+
+.climate-month-row {
+    padding: 3px 6px;
+    border-radius: 8px;
+    transition: background 0.15s ease;
+}
+
+.climate-month-row-active {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.climate-month-name {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+}
+
+.climate-month-name-active {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.climate-temp-min {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 500;
+}
+
+.climate-temp-max {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.climate-temp-max-active {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.climate-precip-val {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #38bdf8;
+}
+
+.climate-precip-val-active {
+    font-weight: 700;
+    color: #7dd3fc;
+}
+
+/* Weather Sun (Sunrise & Sunset) Styles */
+.weather-sun-hero-box {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.weather-sun-hero-title {
+    font-size: 38px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+}
+
+.weather-sun-hero-sub {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 2px;
+}
+
+.weather-sun-section-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.weather-sun-section-sub {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.70);
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.weather-sun-metric-row {
+    padding: 10px 6px;
+}
+
+.weather-sun-metric-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.weather-sun-metric-val {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.climate-sun-monthly-table {
+    padding: 2px 0;
+}
+
+.climate-sun-month-row {
+    padding: 8px 8px;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.climate-sun-month-row-active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.climate-sun-month-name {
+    font-size: 14.5px;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.climate-sun-month-name-active {
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.climate-sun-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.climate-sun-time-active {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.climate-sun-row-divider {
+    min-height: 1px;
+    background-color: rgba(255, 255, 255, 0.06);
+    margin: 0 4px;
+}
+
+/* Weather Moon Phase Styles */
+.weather-moon-hero-box {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.weather-moon-hero-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+    line-height: 1.1;
+}
+
+.weather-moon-hero-sub {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 2px;
+}
+
+button.weather-moon-reset-btn,
+.weather-moon-reset-btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border-radius: 9999px;
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.10);
+    color: #ffffff;
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+button.weather-moon-reset-btn:hover,
+.weather-moon-reset-btn:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.weather-moon-ruler-card {
+    padding: 6px 0;
+}
+
+/* Moon Calendar Card */
+.weather-cal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+button.weather-cal-nav-btn,
+.weather-cal-nav-btn {
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    border-radius: 9999px;
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 6px rgba(0, 0, 0, 0.10);
+    color: rgba(255, 255, 255, 0.90);
+    font-size: 16px;
+    font-weight: 700;
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+button.weather-cal-nav-btn:hover,
+.weather-cal-nav-btn:hover {
+    background-color: transparent;
+    background-image: none;
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 4px 12px rgba(0, 0, 0, 0.18);
+    color: #ffffff;
+}
+
+.weather-cal-weekday {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 4px 0;
+}
+
+.weather-cal-cell {
+    border-radius: 9px;
+    padding: 2px 0;
+    margin: 1px 2px;
+    transition: background 0.15s ease;
+}
+
+.weather-cal-cell:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.weather-cal-cell-selected {
+    background: rgba(56, 189, 248, 0.28);
+    border: 1px solid rgba(56, 189, 248, 0.65);
+}
+
+.weather-cal-cell-num {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.weather-moon-metric-row {
+    padding: 10px 10px;
+}
+
+.weather-moon-metric-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.weather-moon-metric-val {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+
+
+/* High-specificity transparency enforcement for weather atmospheric canvas */
+.capsule-window-ui.weather-canvas-active .preview-panel.preview-panel-weather,
+.capsule-window-ui.weather-canvas-active .preview-panel.preview-weather-full-bg,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-clear-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-clear-dusk,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-clear-night,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-clouds-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-clouds-night,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-rain-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-rain-night,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-drizzle-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-drizzle-night,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-storm-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-storm-night,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-snow-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-snow-night,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-fog-day,
+.capsule-window-ui.weather-canvas-active .preview-panel.weather-bg-fog-night,
+.capsule-window-ui.weather-canvas-active .preview-weather-full-bg,
+.capsule-window-ui.weather-canvas-active .preview-panel {
+    background: transparent;
+    background-image: none;
+    box-shadow: none;
+}
+
+/* High-specificity transparency enforcement for weather overview containers */
+.weather-overview-view,
+.weather-overview-scroll,
+.weather-overview-scroll > viewport,
+.weather-overview-scroll viewport,
+.weather-overview-content,
+.weather-scrolled-window,
+.weather-scrolled-window > viewport,
+.weather-scrolled-window viewport,
+.weather-container,
+.preview-weather-full-bg {
+    background: transparent;
+    background-color: transparent;
+}
+
+/* Night Mode Glass Adaptation for Bento and Glass Cards */
+.weather-night-mode .weather-glass-card,
+.weather-night-mode .weather-bento-card,
+.weather-night-mode .preview-meta-card {
+    background: rgba(18, 24, 38, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.weather-night-mode .weather-glass-card.weather-card-clickable:hover,
+.weather-night-mode .weather-bento-card-interactive:hover {
+    background: rgba(28, 38, 58, 0.65);
+    border-color: rgba(255, 255, 255, 0.24);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Dusk and Dawn Mode Glass Adaptation for Bento and Glass Cards */
+.weather-dusk-mode .weather-glass-card,
+.weather-dusk-mode .weather-bento-card,
+.weather-dusk-mode .preview-meta-card {
+    background: rgba(45, 35, 55, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+}
+
+.weather-dusk-mode .weather-glass-card.weather-card-clickable:hover,
+.weather-dusk-mode .weather-bento-card-interactive:hover {
+    background: rgba(65, 48, 75, 0.55);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.30);
+}
+
+/* Night Mode Glass Adaptation for Pill Buttons */
+.weather-night-mode button.city-pill-btn,
+.weather-night-mode .city-pill-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 2px 6px rgba(0, 0, 0, 0.30);
+}
+
+.weather-night-mode button.city-pill-btn:hover,
+.weather-night-mode .city-pill-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30), 0 4px 12px rgba(0, 0, 0, 0.40);
+}
+
+.weather-night-mode button.city-pill-btn.active,
+.weather-night-mode .city-pill-btn.active {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: rgba(125, 211, 252, 0.65);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 14px rgba(56, 189, 248, 0.30);
+}
+
+/* Dusk Mode Glass Adaptation for Pill Buttons */
+.weather-dusk-mode button.city-pill-btn,
+.weather-dusk-mode .city-pill-btn {
+    background: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 2px 6px rgba(0, 0, 0, 0.20);
+}
+
+.weather-dusk-mode button.city-pill-btn:hover,
+.weather-dusk-mode .city-pill-btn:hover {
+    background: rgba(255, 255, 255, 0.20);
+    border-color: rgba(255, 255, 255, 0.32);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.weather-dusk-mode button.city-pill-btn.active,
+.weather-dusk-mode .city-pill-btn.active {
+    background: rgba(244, 114, 182, 0.25);
+    border-color: rgba(251, 168, 212, 0.70);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.40), 0 0 14px rgba(244, 114, 182, 0.35);
+}
+

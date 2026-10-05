@@ -1,0 +1,22 @@
+#!/bin/sh
+# Echo Weather Launcher
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# 1. Running directly from repository root
+if [ -f "$SCRIPT_DIR/main.py" ]; then
+    exec /usr/bin/env python3 "$SCRIPT_DIR/main.py" "$@"
+# 2. Installed in user-space directory ~/.local/share/echo-weather
+elif [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/echo-weather/main.py" ]; then
+    exec /usr/bin/env python3 "${XDG_DATA_HOME:-$HOME/.local/share}/echo-weather/main.py" "$@"
+# 3. Installed system-wide in /opt/echo-weather or /usr/share/echo-weather
+elif [ -f "/opt/echo-weather/main.py" ]; then
+    exec /usr/bin/env python3 "/opt/echo-weather/main.py" "$@"
+elif [ -f "/usr/share/echo-weather/main.py" ]; then
+    exec /usr/bin/env python3 "/usr/share/echo-weather/main.py" "$@"
+else
+    echo "Error: Echo Weather files could not be located." >&2
+    echo "Please ensure the repository is installed properly or run ./install.sh" >&2
+    exit 1
+fi

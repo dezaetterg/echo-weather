@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "echo-weather"
+version = "1.0.0"
+description = "Atmospheric meteorological desktop application with liquid glass aesthetics"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Demid" }
+]
+keywords = [
+    "weather",
+    "meteorology",
+    "gtk4",
+    "cairo",
+    "linux-desktop",
+    "forecast",
+    "liquid-glass",
+    "atmosphere"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Desktop Environment :: Gnome",
+]
+dependencies = [
+    "PyGObject>=3.42.0",
+    "pycairo>=1.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+echo-weather = "main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [
+    ".git",
+    "__pycache__",
+    "scratch",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E402",  # module level import not at top of file (required for gi.require_version)
+    "E501",  # line too long
+    "E701",  # multiple statements on one line (colon)
+    "E702",  # multiple statements on one line (semicolon)
+    "E721",  # do not compare types, use isinstance()
+    "F401",  # imported but unused (re-exports in __init__)
+    "F841",  # local variable assigned to but never used
+    "W291",  # trailing whitespace in templates
+    "W293",  # blank line contains whitespace in multiline CSS/strings
+]
