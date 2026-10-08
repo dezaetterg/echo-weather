@@ -1,4 +1,4 @@
-# Weather Detail Sheet (Spotlight / macOS style detailed meteorological view)
+# Weather Detail Sheet - detailed meteorological view
 import math
 import os
 from datetime import datetime, timedelta
@@ -184,7 +184,7 @@ class WeatherDetailSheet(Gtk.Box):
     def _build_ui(self):
         is_ru = (get_current_language() == 'ru')
 
-        # 1. Top Navigation Bar (macOS Weather style with Gtk.CenterBox)
+        # 1. Top Navigation Bar (Gtk.CenterBox)
         nav_bar = Gtk.CenterBox()
         nav_bar.add_css_class('weather-nav-bar')
 
@@ -195,7 +195,7 @@ class WeatherDetailSheet(Gtk.Box):
         arrow_icon = Gtk.Image.new_from_icon_name('go-previous-symbolic')
         arrow_icon.set_pixel_size(13)
         btn_back_box.append(arrow_icon)
-        self.lbl_back = Gtk.Label(label='Обзор' if is_ru else 'Overview')
+        self.lbl_back = Gtk.Label(label=t('weather_back'))
         self.lbl_back.add_css_class('weather-back-label')
         btn_back_box.append(self.lbl_back)
         self.btn_back.set_child(btn_back_box)
@@ -292,7 +292,7 @@ class WeatherDetailSheet(Gtk.Box):
         self.hero_moon_box.set_visible(False)
 
         hero_moon_top = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        self.lbl_moon_hero_title = Gtk.Label(label='Молодая луна' if is_ru else 'New Moon')
+        self.lbl_moon_hero_title = Gtk.Label(label=t('weather_moon_phase_waxing_crescent'))
         self.lbl_moon_hero_title.add_css_class('weather-moon-hero-title')
         self.lbl_moon_hero_title.set_xalign(0.0)
         hero_moon_top.append(self.lbl_moon_hero_title)
@@ -307,7 +307,7 @@ class WeatherDetailSheet(Gtk.Box):
 
         self.hero_moon_box.append(hero_moon_top)
 
-        self.lbl_moon_hero_sub = Gtk.Label(label='Освещенность: --%' if is_ru else 'Illumination: --%')
+        self.lbl_moon_hero_sub = Gtk.Label(label=t('weather_moon_illum_title', val='--'))
         self.lbl_moon_hero_sub.add_css_class('weather-moon-hero-sub')
         self.lbl_moon_hero_sub.set_xalign(0.0)
         self.hero_moon_box.append(self.lbl_moon_hero_sub)
@@ -521,6 +521,8 @@ class WeatherDetailSheet(Gtk.Box):
                 self.hero_moon_box.set_visible(False)
             self.metric_menu_btn.set_valign(Gtk.Align.CENTER)
         self.mode_stack.set_visible_child_name(mode_id)
+        if hasattr(self, 'mode_stack') and self.mode_stack:
+            self._refresh_selected_day()
 
     def retranslate(self):
         lang = get_current_language()
@@ -1006,7 +1008,14 @@ class WeatherDetailSheet(Gtk.Box):
 
         self.lbl_date_sub.set_label(format_full_date(dt, lang))
 
-        cur_time_str = datetime.now().strftime('%H:%M')
+        utc_off = self.data.get('utc_offset_seconds', 0)
+        from datetime import timezone as dt_timezone
+        utc_now = datetime.now(dt_timezone.utc)
+        city_now = utc_now + timedelta(seconds=utc_off)
+        cur_city_hour = city_now.hour if is_today else -1
+        h_idx = max(0, min(23, cur_city_hour if cur_city_hour >= 0 else 12))
+        cur_time_str = city_now.strftime('%H:%M')
+
         if is_today:
             sum_time_hdr = t('weather_time_now_hdr', time=cur_time_str)
         else:
@@ -1016,7 +1025,7 @@ class WeatherDetailSheet(Gtk.Box):
             sum_time_hdr = t('weather_time_allday_hdr', day=w_short)
 
         # 2. Dynamic Hero Row for current mode
-        cur_hour = cur_day.get('cur_hour', datetime.now().hour if is_today else -1)
+        cur_hour = cur_city_hour
         h_idx = max(0, min(23, cur_hour if cur_hour >= 0 else 12))
 
         if self.current_mode == 'conditions':
@@ -1130,7 +1139,7 @@ class WeatherDetailSheet(Gtk.Box):
             codes=cur_day.get('hourly_codes', [0] * 24),
             is_days=cur_day.get('hourly_is_days', [1] * 24),
             is_today=is_today,
-            cur_hour=cur_day.get('cur_hour', -1),
+            cur_hour=cur_city_hour,
             show_feels_like=self.show_feels_like,
             bg_class=self.bg_class
         )
@@ -1201,7 +1210,7 @@ class WeatherDetailSheet(Gtk.Box):
         # B. UV
         h_uvs = cur_day.get('hourly_uvs', [0.0] * 24)
         peak_uv = cur_day.get('uv_max', max(h_uvs) if h_uvs else 0.0)
-        self.uv_hourly_area.update_data(h_uvs, cur_day.get('cur_hour', -1), is_today)
+        self.uv_hourly_area.update_data(h_uvs, cur_city_hour, is_today)
         self.lbl_uv_val.set_label(f"{peak_uv:.1f}")
         if peak_uv <= 2.9:
             uv_lvl = 'Низкий' if is_ru else 'Low'
@@ -1288,7 +1297,7 @@ class WeatherDetailSheet(Gtk.Box):
         card_dir = cur_day.get('dominant_wind_cardinal', 'СЗ')
         desc_dir = cur_day.get('dominant_wind_desc', 'Северо-западный ветер')
         self.lbl_compass_desc.set_label(f"{desc_dir} ({cur_dir}°) • Порывы до {cur_gust} км/ч" if is_ru else f"{card_dir} wind ({cur_dir}°) • Gusts to {cur_gust} km/h")
-        self.wind_hourly_area.update_data(h_winds, h_gusts, h_dirs, cur_day.get('cur_hour', -1), is_today)
+        self.wind_hourly_area.update_data(h_winds, h_gusts, h_dirs, cur_city_hour, is_today)
         self.lbl_wind_max.set_label(f"{cur_day.get('wind_max', max(h_winds))} км/ч" if is_ru else f"{cur_day.get('wind_max', max(h_winds))} km/h")
         self.lbl_wind_gusts_max.set_label(f"{cur_day.get('gust_max', max(h_gusts))} км/ч" if is_ru else f"{cur_day.get('gust_max', max(h_gusts))} km/h")
         self.lbl_wind_dir_name.set_label(f"{card_dir} ({desc_dir})")
@@ -1331,7 +1340,7 @@ class WeatherDetailSheet(Gtk.Box):
         # D. Precipitation
         h_precips = cur_day.get('hourly_precips', [0.0] * 24)
         h_probs = cur_day.get('hourly_probs', [0] * 24)
-        self.precip_hourly_area.update_data(h_precips, h_probs, cur_day.get('cur_hour', -1), is_today)
+        self.precip_hourly_area.update_data(h_precips, h_probs, cur_city_hour, is_today)
         self.lbl_pr_day_vol.set_label(f"{cur_day.get('precip_sum', 0.0):.1f} мм" if is_ru else f"{cur_day.get('precip_sum', 0.0):.1f} mm")
         self.lbl_pr_day_prob.set_label(f"{cur_day.get('precip_prob_max', 0)}%")
 
@@ -1377,7 +1386,7 @@ class WeatherDetailSheet(Gtk.Box):
         # E. Humidity
         h_hums = cur_day.get('hourly_hums', [60] * 24)
         h_dews = cur_day.get('hourly_dews', [10] * 24)
-        self.humidity_hourly_area.update_data(h_hums, h_dews, cur_day.get('cur_hour', -1), is_today)
+        self.humidity_hourly_area.update_data(h_hums, h_dews, cur_city_hour, is_today)
         raw_dew = self.data.get('dew_point', h_dews[h_idx]) if is_today else round(sum(h_dews) / len(h_dews))
         cur_dew = convert_temp(raw_dew, self.temp_unit)
         dew_unit_sym = "°F" if self.temp_unit == "fahrenheit" else "°C"
@@ -1424,7 +1433,7 @@ class WeatherDetailSheet(Gtk.Box):
 
         # F. Visibility
         h_vis = cur_day.get('hourly_vis_km', [10.0] * 24)
-        self.visibility_hourly_area.update_data(h_vis, cur_day.get('cur_hour', -1), is_today)
+        self.visibility_hourly_area.update_data(h_vis, cur_city_hour, is_today)
         cur_vis = self.data.get('visibility_km', h_vis[h_idx]) if is_today else cur_day.get('min_visibility_km', 10.0)
         self.lbl_vis_km_val.set_label(f"{cur_vis:.1f} км" if is_ru else f"{cur_vis:.1f} km")
         if cur_vis >= 10.0:
@@ -1476,7 +1485,7 @@ class WeatherDetailSheet(Gtk.Box):
         # G. Pressure
         h_press = cur_day.get('hourly_press_mm', [752] * 24)
         h_press_hpa = cur_day.get('hourly_press_hpa', [1003] * 24)
-        self.pressure_hourly_area.update_data(h_press, cur_day.get('cur_hour', -1), is_today)
+        self.pressure_hourly_area.update_data(h_press, cur_city_hour, is_today)
         cur_press = self.data.get('pressure_mm', h_press[h_idx]) if is_today else round(sum(h_press) / len(h_press))
         cur_hpa = round(cur_press / 0.75006)
         self.pressure_gauge_area.update_data(cur_press, cur_hpa)
@@ -1565,25 +1574,27 @@ class WeatherDetailSheet(Gtk.Box):
             lon = self.data.get('lon', 37.61)
             t_max = self.data.get('temp_max', 20)
             t_min = self.data.get('temp_min', 10)
-            is_ru = (get_current_language() == 'ru')
-            c_data = calculate_climate_averages(lat, lon, t_max, t_min, is_ru=is_ru)
+            c_data = calculate_climate_averages(lat, lon, t_max, t_min, lang=get_current_language())
             self.data['climate_averages'] = c_data
 
         # 1. Temperature Tab
-        is_ru = (get_current_language() == 'ru')
         cur_day = self.days_detailed[0] if self.days_detailed else {}
-        cur_hour = datetime.now().hour
+        utc_off = self.data.get('utc_offset_seconds', 0)
+        from datetime import timezone as dt_timezone
+        city_now = datetime.now(dt_timezone.utc) + timedelta(seconds=utc_off)
+        cur_hour = city_now.hour
 
         if self.temp_unit == "fahrenheit":
             diff_f = convert_temp_diff(c_data.get('temp_diff', 0), 'fahrenheit')
             avg_max_f = convert_temp(c_data.get('temp_avg_max', 20), 'fahrenheit')
+            avg_label = t("weather_climate_average_label")
             if diff_f > 0:
-                temp_diff_str = f"+{diff_f}° > среднего" if is_ru else f"+{diff_f}° > average"
+                temp_diff_str = f"+{diff_f}° > {avg_label}"
             elif diff_f < 0:
-                temp_diff_str = f"{diff_f}° < среднего" if is_ru else f"{diff_f}° < average"
+                temp_diff_str = f"{diff_f}° < {avg_label}"
             else:
-                temp_diff_str = "В пределах нормы" if is_ru else "Near average"
-            temp_sub_str = f"Средн. макс: {avg_max_f}°" if is_ru else f"Avg high: {avg_max_f}°"
+                temp_diff_str = t("weather_climate_near_norm")
+            temp_sub_str = t("weather_climate_avg_high", val=avg_max_f)
             self.lbl_avg_temp_hero.set_label(temp_diff_str)
             self.lbl_avg_temp_sub.set_label(temp_sub_str)
 
@@ -1657,17 +1668,21 @@ class WeatherDetailSheet(Gtk.Box):
 
     def _refresh_sun_view(self):
         sd = self.data.get('solar_details')
+        lat = self.data.get('lat', 53.7557)
+        lon = self.data.get('lon', 87.1099)
+        utc_off = self.data.get('utc_offset_seconds', 0) / 3600.0
+        cur_lang = get_current_language()
+        from datetime import timezone as dt_timezone
+        city_date = (datetime.now(dt_timezone.utc) + timedelta(hours=utc_off)).date()
+
         if not sd:
             from providers.weather import calculate_annual_solar_table, calculate_solar_details
-            lat = self.data.get('lat', 53.7557)
-            lon = self.data.get('lon', 87.1099)
-            utc_off = self.data.get('utc_offset_seconds', 0) / 3600.0
-            is_ru = (get_current_language() == 'ru')
-            sd = calculate_solar_details(lat, lon, datetime.now().date(), utc_off, is_ru=is_ru)
-            sd['annual_table'] = calculate_annual_solar_table(lat, lon, utc_off, is_ru=is_ru)
+            sd = calculate_solar_details(lat, lon, city_date, utc_off, lang=cur_lang)
+            sd['annual_table'] = calculate_annual_solar_table(lat, lon, utc_off, lang=cur_lang)
             self.data['solar_details'] = sd
-
-        is_ru = (get_current_language() == 'ru')
+        elif 'annual_table' not in sd:
+            from providers.weather import calculate_annual_solar_table
+            sd['annual_table'] = calculate_annual_solar_table(lat, lon, utc_off, lang=cur_lang)
 
         # 1. Hero
         sr_val = sd.get('sunrise', '06:40')
@@ -1713,19 +1728,17 @@ class WeatherDetailSheet(Gtk.Box):
         lat = self.data.get('lat', 53.7557)
         lon = self.data.get('lon', 87.1099)
         utc_off = self.data.get('utc_offset_seconds', 0) / 3600.0
-        is_ru = (get_current_language() == 'ru')
+        cur_lang = get_current_language()
 
         from providers.weather import calculate_detailed_moon
-        d_moon = calculate_detailed_moon(lat, lon, target_dt, utc_off, is_ru=is_ru)
+        d_moon = calculate_detailed_moon(lat, lon, target_dt, utc_off, lang=cur_lang)
 
         self.moon_sphere.set_phase(d_moon['cycle_fraction'], d_moon['illumination'], d_moon['tilt_deg'])
         self.lbl_moon_hero_title.set_label(d_moon['phase_name'])
 
         if is_scrubbed:
-            ru_months = ['', 'янв.', 'февр.', 'марта', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.']
-            en_months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            m_list = ru_months if is_ru else en_months
-            date_str = f"{target_dt.day} {m_list[target_dt.month]}"
+            from i18n import format_day_month
+            date_str = format_day_month(target_dt.day, target_dt.month, lang=cur_lang)
             self.lbl_moon_hero_sub.set_label(f"{date_str} · {t('weather_moon_illumination')}: {d_moon['illumination']}%")
         else:
             self.lbl_moon_hero_sub.set_label(f"{t('weather_moon_illumination')}: {d_moon['illumination']}%")
@@ -1757,7 +1770,7 @@ class WeatherDetailSheet(Gtk.Box):
         lat = self.data.get('lat', 53.7557)
         lon = self.data.get('lon', 87.1099)
         utc_off = self.data.get('utc_offset_seconds', 0) / 3600.0
-        is_ru = (get_current_language() == 'ru')
+        cur_lang = get_current_language()
 
         from datetime import timezone as dt_timezone
         utc_now = datetime.now(dt_timezone.utc)
@@ -1765,7 +1778,7 @@ class WeatherDetailSheet(Gtk.Box):
 
         if not d_moon:
             from providers.weather import calculate_detailed_moon
-            d_moon = calculate_detailed_moon(lat, lon, city_now, utc_off, is_ru=is_ru)
+            d_moon = calculate_detailed_moon(lat, lon, city_now, utc_off, lang=cur_lang)
             self.data['detailed_moon'] = d_moon
 
         # Set base datetime on ruler and reset

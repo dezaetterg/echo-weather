@@ -14,6 +14,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import GLib, Gtk
 
+from data.wmo_conditions import WEEKDAY_LETTERS, get_weekday_name
 from i18n import get_current_language, t
 from weather_atmosphere import MoonSphereArea
 
@@ -94,10 +95,7 @@ class MoonTimelineRuler(Gtk.DrawingArea):
         h_start = int(center_h_floor - hours_half)
         h_end = int(center_h_floor + hours_half)
 
-        is_ru = (get_current_language() == "ru")
-        day_names_ru = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
-        day_names_en = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
-        day_names = day_names_ru if is_ru else day_names_en
+        cur_lang = get_current_language()
 
         for h in range(h_start, h_end + 1):
             x = cx + (h - self.center_offset_hours) * self.pixels_per_hour
@@ -110,13 +108,13 @@ class MoonTimelineRuler(Gtk.DrawingArea):
                     lbl = t("weather_today_label")
                     is_today = True
                 elif diff_days == -1:
-                    lbl = "ВЧЕРА" if is_ru else "YESTERDAY"
+                    lbl = t("weather_yesterday_upper")
                     is_today = False
                 elif diff_days == 1:
-                    lbl = "ЗАВТРА" if is_ru else "TOMORROW"
+                    lbl = t("weather_tomorrow_upper")
                     is_today = False
                 else:
-                    d_name = day_names[tick_dt.weekday()]
+                    d_name = get_weekday_name(tick_dt.weekday(), lang=cur_lang).upper()
                     lbl = f"{d_name} {tick_dt.day}"
                     is_today = False
 
@@ -271,8 +269,8 @@ class MoonCalendarCard(Gtk.Box):
 
         wd_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         wd_box.set_homogeneous(True)
-        is_ru = (get_current_language() == "ru")
-        w_labels = ["П", "В", "С", "Ч", "П", "С", "В"] if is_ru else ["M", "T", "W", "T", "F", "S", "S"]
+        cur_lang = get_current_language()
+        w_labels = WEEKDAY_LETTERS.get(cur_lang, WEEKDAY_LETTERS["en"])
         for w_txt in w_labels:
             lbl_w = Gtk.Label(label=w_txt)
             lbl_w.add_css_class("weather-cal-weekday")
@@ -344,8 +342,8 @@ class MoonCalendarCard(Gtk.Box):
 
     def _refresh_calendar(self):
         from providers.weather import calculate_detailed_moon, calculate_month_moon_calendar
-        is_ru = (get_current_language() == "ru")
-        cal_data = calculate_month_moon_calendar(self.year, self.month, is_ru=is_ru)
+        cur_lang = get_current_language()
+        cal_data = calculate_month_moon_calendar(self.year, self.month, lang=cur_lang)
         self.lbl_month_title.set_label(cal_data["title"])
 
         while child := self.grid_container.get_first_child():
@@ -401,7 +399,7 @@ class MoonCalendarCard(Gtk.Box):
                 empty_cell.set_size_request(36, 42)
                 row_box.append(empty_cell)
 
-        detailed_mid = calculate_detailed_moon(self.lat, self.lon, datetime(self.year, self.month, 15), self.utc_offset_hours, is_ru=is_ru)
+        detailed_mid = calculate_detailed_moon(self.lat, self.lon, datetime(self.year, self.month, 15), self.utc_offset_hours, lang=cur_lang)
         self.lbl_new_moon_row._lbl_val.set_label(detailed_mid["next_new_moon_date_str"])
         self.lbl_full_moon_row._lbl_val.set_label(detailed_mid["next_full_moon_date_str"])
 

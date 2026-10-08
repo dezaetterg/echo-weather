@@ -1,60 +1,198 @@
 # Echo Weather
 
-<div align="center">
+GNOME desktop application displaying meteorological forecasts. Written in Python with GTK4 and libadwaita.
 
-![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
-![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)
-![GTK 4.0](https://img.shields.io/badge/GTK-4.0-4B89AC.svg?logo=gnome&logoColor=white)
-![Cairo Graphics](https://img.shields.io/badge/Graphics-Cairo-D22630.svg)
-![Version](https://img.shields.io/badge/Release-v1.0.0-success.svg)
-![Platform](https://img.shields.io/badge/Platform-Linux-FCC624.svg?logo=linux&logoColor=black)
+[English](#echo-weather) | [Русский](#echo-weather-ru)
 
-**Atmospheric meteorological desktop application for Linux with liquid glass aesthetics, real-time particle physics, and professional weather analytics.**
+![License](https://img.shields.io/badge/license-GPL--3.0-blue)
+![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
 
-*Атмосферное метеорологическое десктоп-приложение для Linux с эстетикой Liquid Glass, физикой частиц реального времени и метеорологической аналитикой.*
+---
 
-</div>
+## About
+
+Echo Weather retrieves weather forecasts from multiple sources and displays them in a GTK4 interface. Data is cached to disk and associated with saved locations. The interface supports Russian and English, switching automatically according to system locale.
+
+---
+
+## Features
+
+### Forecast
+
+- Forecast range: 10 days (Open-Meteo), 2 to 9 days (MET Norway)
+- Data sources: Consensus (ECMWF + ICON + MET Norway via Open-Meteo), ECMWF IFS, DWD ICON, MET Norway, Open-Meteo
+- Source and model selection via interface
+- Hourly forecast for current day
+- Precipitation: type, intensity, probability
+- Wind: direction, speed, gusts (compass and hourly chart)
+
+### Analytics
+
+- Climate normal: comparison of current temperature with 24-hour 80% normal range
+- Monthly temperature and precipitation normals table (based on Open-Meteo ERA5 data)
+- UV index, visibility, humidity, pressure, snow depth
+- Lunar calendar: phase, moonrise/moonset, new moon and full moon dates
+- Sunrise and sunset, day length
+
+### Interface
+
+- Multiple saved locations, fast switching
+- Temperature units: °C / °F
+- Interface language: ru / en (detected from system locale, configurable in settings)
+- Disk cache for forecasts and geocoding
+- Detailed cards: wind, precipitation, UV, pressure, visibility, humidity, moon, climate, conditions
+
+---
+
+## Installation
+
+### System Dependencies
+
+**Arch Linux:**
+```bash
+sudo pacman -S python python-gobject gtk4 libadwaita python-cairo
+```
+
+**Debian / Ubuntu:**
+```bash
+sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1
+```
+
+**Fedora:**
+```bash
+sudo dnf install python3 python3-gobject gtk4 libadwaita
+```
+
+### Installation Script
+
+```bash
+git clone https://github.com/dezaetterg/echo-weather.git
+cd echo-weather
+bash install.sh
+```
+
+The script verifies dependencies, copies application files to `~/.local/share/echo-weather`, installs the launcher into `~/.local/bin`, and registers the `.desktop` file. Configuration (`~/.config/echo-weather`) and cache (`~/.cache/echo-weather`) are preserved on reinstallation.
+
+### Running
+
+```bash
+echo-weather
+```
+
+If `~/.local/bin` is not in `PATH`:
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+### Packaging (.deb, Arch .pkg.tar.zst, .tar.zst)
+
+To build packages for your distribution:
+```bash
+bash packaging/build_packages.sh
+```
+Outputs in `dist/`:
+- `echo-weather-1.0.0.tar.zst` — Universal Zstandard release archive
+- `echo-weather-1.0.0-1-any.pkg.tar.zst` — Arch Linux package (`sudo pacman -U dist/echo-weather-1.0.0-1-any.pkg.tar.zst`)
+- `echo-weather_1.0.0-1_all.deb` — Debian/Ubuntu package (`sudo dpkg -i dist/echo-weather_1.0.0-1_all.deb`)
+
+### Uninstallation
+
+```bash
+bash uninstall.sh
+```
+
+Configuration and cache are preserved. For complete removal:
+```bash
+rm -rf ~/.config/echo-weather ~/.cache/echo-weather
+```
+
+---
+
+## Controls
+
+| Action | Shortcut |
+|---|---|
+| Refresh forecast | `F5` or `Ctrl+R` |
+| Focus search | `Ctrl+F` |
+| Close detail card | `Escape` or `Alt+Left` |
+
+---
+
+## Development
+
+### Environment Setup
+
+```bash
+python3 -m venv .venv --system-site-packages
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+### Tests
+
+```bash
+PYTHONPATH=. pytest
+```
+
+### Linter
+
+```bash
+ruff check .
+```
+
+---
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. License text is available in [LICENSE](LICENSE).
+
+---
+
+<a id="echo-weather-ru"></a>
+
+# Echo Weather (RU)
+
+Десктопное приложение для GNOME, отображающее метеорологический прогноз. Написано на Python с GTK4 и libadwaita.
+
+[English](#echo-weather) | [Русский](#echo-weather-ru)
+
+![License](https://img.shields.io/badge/license-GPL--3.0-blue)
+![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
+
+---
+
+## О приложении
+
+Echo Weather получает прогноз погоды из нескольких источников и отображает его в GTK4-интерфейсе. Данные кешируются на диск и привязываются к сохранённым городам. Интерфейс поддерживает русский и английский язык, переключается автоматически по системной локали.
 
 ---
 
 ## Возможности
 
-- **Интерфейс Liquid Glass и Bento**:
-  - Полупрозрачные карточки с матовым эффектом, тонкими границами и мягкими адаптивными тенями.
-  - 14 динамических атмосферных тем, сменяющихся в зависимости от положения солнца (рассвет, полдень, золотой час, сумерки, ночь) и погодных условий.
-  - Нативный интерфейс GTK4 с плавными переходами и поддержкой масштабирования HiDPI.
+### Прогноз
 
-- **Физический холст атмосферных частиц**:
-  - Встроенный физический движок на базе Cairo с адаптивным управлением частотой кадров (до 60 FPS) для экономии ресурсов процессора и батареи.
-  - Реалистичные капли дождя с углом сноса по ветру и всплесками при контакте с поверхностью.
-  - Парящая морось и легкая взвесь.
-  - Мерцающее ночное звездное небо и редкие падающие метеоры со световым шлейфом.
+- Горизонт прогноза: 10 дней (Open-Meteo), от 2 до 9 дней (MET Norway)
+- Источники данных: Consensus (ECMWF + ICON + MET Norway через Open-Meteo), ECMWF IFS, DWD ICON, MET Norway, Open-Meteo
+- Выбор источника и модели через интерфейс
+- Почасовой прогноз на текущий день
+- Осадки: тип, интенсивность, вероятность
+- Ветер: направление, скорость, порывы (компас и почасовой график)
 
-- **10 специализированных аналитических модулей**:
-  1. **Погодные условия**: интерактивный почасовой график температуры на базе кубических сплайнов Безье с поддержкой жестов курсора и 10-дневным прогнозом.
-  2. **УФ-индекс**: расчет ультрафиолетового излучения, пиковые часы и рекомендации ВОЗ по защите кожи.
-  3. **Ветер и порывы**: 360-градусный круговой компас с вектором направления ветра, фиксация максимальных порывов и интерактивная шкала Бофорта.
-  4. **Осадки**: почасовая гистограмма объема осадков (мм/ч) и вероятности, классификация интенсивности и прогноз на ближайший час.
-  5. **Солнечные циклы**: расчет дуги солнца, времени золотого часа, гражданских, навигационных и астрономических сумерек, годовая таблица светового дня.
-  6. **Лунная астрономия**: 3D-моделирование лунной сферы с фазами освещения, расстояние до Луны в километрах, время восхода, заката и 30-дневный лунный календарь.
-  7. **Влажность и комфорт**: суточный график относительной влажности, расчет точки росы и шкала духоты воздуха.
-  8. **Видимость**: оценка прозрачности атмосферы и классификация условий (туман, дымка, ясная видимость).
-  9. **Давление и барометр**: круговая шкала барометра с индикацией тенденции изменения давления (в мм рт. ст. и гПа).
-  10. **Климатическая норма**: сопоставление текущих значений с 30-летними климатическими нормами и помесячная статистика аномалий.
+### Аналитика
 
-- **Многомодельный метеорологический движок**:
-  - **Open-Meteo**: глобальные ансамблевые прогнозы с оперативным уточнением.
-  - **ECMWF IFS**: европейский центр среднесрочных прогнозов погоды (мировой эталон точности).
-  - **DWD ICON**: немецкая высокоточная гидродинамическая модель атмосферы.
-  - **MET Norway**: модель норвежского метеорологического института.
-  - **Консенсусный прогноз**: объединение нескольких моделей для максимальной надежности.
-  - **Офлайн-режим**: симуляция суточного хода температуры при отсутствии подключения к сети.
+- Климатическая норма: сравнение текущей температуры с 80%-м коридором нормы за 24 часа
+- Таблица норм температуры и осадков по месяцам (на основе данных Open-Meteo ERA5)
+- Индекс UV, видимость, влажность, давление, высота снежного покрова
+- Лунный календарь: фаза, восход/заход, даты новолуния и полнолуния
+- Восход и закат солнца, продолжительность дня
 
-- **Управление городами и локализация**:
-  - Быстрый поиск с автодополнением и встроенной базой городов.
-  - Закрепление избранных городов и выбор основного домашнего города.
-  - Полная поддержка русского и английского языков с автоматическим определением.
-  - Настраиваемые единицы измерения: Цельсий / Фаренгейт, км/ч / м/с / миль/ч, мм рт. ст. / гПа.
+### Интерфейс
+
+- Несколько сохранённых городов, быстрое переключение
+- Единицы температуры: °C / °F
+- Язык интерфейса: ru / en (определяется по системной локали, переключается в настройках)
+- Дисковый кеш прогнозов и геокодинга
+- Детальные карточки: ветер, осадки, UV, давление, видимость, влажность, луна, климат, условия
 
 ---
 
@@ -62,119 +200,100 @@
 
 ### Системные зависимости
 
-Для работы приложения требуются библиотеки **GTK 4.0**, **PyGObject** и **Cairo**.
-
-#### Arch Linux / Manjaro
+**Arch Linux:**
 ```bash
-sudo pacman -S gtk4 libadwaita python-gobject python-cairo
+sudo pacman -S python python-gobject gtk4 libadwaita python-cairo
 ```
 
-#### Debian 12+ / Ubuntu 24.04+
+**Debian / Ubuntu:**
 ```bash
-sudo apt update
-sudo apt install libgtk-4-1 gir1.2-gtk-4.0 gir1.2-adw-1 python3-gi python3-gi-cairo
+sudo apt install python3 python3-gi python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1
 ```
 
-#### Fedora
+**Fedora:**
 ```bash
-sudo dnf install gtk4 libadwaita python3-gobject python3-cairo
+sudo dnf install python3 python3-gobject gtk4 libadwaita
 ```
 
----
+### Установка через скрипт
 
-### Пакеты и способы установки
-
-#### 1. Debian / Ubuntu (.deb пакет)
-Готовый пакет находится в каталоге `dist/` или в релизах GitHub:
 ```bash
-sudo dpkg -i dist/echo-weather_1.0.0-1_all.deb
-sudo apt-get install -f
+git clone https://github.com/dezaetterg/echo-weather.git
+cd echo-weather
+bash install.sh
 ```
 
-Сборка пакета из исходников:
+Скрипт проверяет зависимости, копирует файлы в `~/.local/share/echo-weather`, устанавливает лаунчер в `~/.local/bin` и регистрирует `.desktop`-файл. Конфиг (`~/.config/echo-weather`) и кеш (`~/.cache/echo-weather`) при повторной установке не перезаписываются.
+
+### Запуск
+
 ```bash
-./packaging/build_packages.sh
+echo-weather
 ```
 
-#### 2. Arch Linux (PKGBUILD)
-Файл сборки для Arch Linux размещен в `packaging/arch/PKGBUILD`:
+Если `~/.local/bin` не в `PATH`:
 ```bash
-cd packaging/arch
-makepkg -si
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
-#### 3. Исходный архив (.tar.gz)
-Релизный архив генерируется скриптом сборщика в каталог `dist/`:
+### Сборка пакетов (.deb, Arch .pkg.tar.zst, .tar.zst)
+
+Сборка готовых пакетов под дистрибутивы:
 ```bash
-tar -xzf dist/echo-weather-1.0.0.tar.gz
-cd echo-weather-1.0.0
-./install.sh
+bash packaging/build_packages.sh
+```
+Файлы в `dist/`:
+- `echo-weather-1.0.0.tar.zst` — Универсальный архив Zstandard
+- `echo-weather-1.0.0-1-any.pkg.tar.zst` — Пакет для Arch Linux (`sudo pacman -U dist/echo-weather-1.0.0-1-any.pkg.tar.zst`)
+- `echo-weather_1.0.0-1_all.deb` — Пакет для Debian/Ubuntu (`sudo dpkg -i dist/echo-weather_1.0.0-1_all.deb`)
+
+### Удаление
+
+```bash
+bash uninstall.sh
 ```
 
-#### 4. Прямая установка через скрипт
-В корне проекта выполните:
+Конфигурация и кеш при этом сохраняются. Для полного удаления:
 ```bash
-./install.sh
-```
-Для удаления:
-```bash
-./uninstall.sh
-```
-
-#### 5. Запуск без установки
-Приложение можно запустить напрямую из репозитория:
-```bash
-./echo-weather
-```
-Или указав город параметром командной строки:
-```bash
-./echo-weather "Novokuznetsk"
+rm -rf ~/.config/echo-weather ~/.cache/echo-weather
 ```
 
 ---
 
-## Горячие клавиши и управление
+## Управление
 
-| Действие | Управление / Клавиша |
-| :--- | :--- |
-| Поиск города | Клик по строке поиска или Ctrl + F |
-| Просмотр почасовых данных | Клик и перетаскивание курсора по графику |
-| Открытие аналитики | Клик по любой карточке Bento на главном экране |
-| Закрытие аналитики | Кнопка Назад или клавиша Escape |
-| Выбор основного города | Кнопка "Основной город" под названием или правый клик по вкладке |
-| Закрепление города | Кнопка "Закрепить" под названием или контекстное меню |
-| Смена модели погоды | Настройки -> Модель погоды (ECMWF, ICON, Open-Meteo, MET Norway, Консенсус) |
+| Действие | Клавиши |
+|---|---|
+| Обновить прогноз | `F5` или `Ctrl+R` |
+| Перейти в поиск | `Ctrl+F` |
+| Закрыть детальную карточку | `Escape` или `Alt+Left` |
 
 ---
 
-## Разработка и тестирование
+## Разработка
 
-### Подготовка виртуального окружения
+### Окружение
+
 ```bash
 python3 -m venv .venv --system-site-packages
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 ```
 
-### Запуск тестов
+### Тесты
+
 ```bash
 PYTHONPATH=. pytest
 ```
 
-### Проверка линтером
+### Линтер
+
 ```bash
 ruff check .
 ```
 
 ---
 
-## Документация для разработчиков
-
-- [SPECIFICATION.md](SPECIFICATION.md): Архитектурная спецификация (рендеринг, кастомные виджеты Cairo, WMO-коды).
-- [REFACTORING_PLAN.md](REFACTORING_PLAN.md): Документация по структуре модулей и оптимизациям.
-
----
-
 ## Лицензия
 
-Проект распространяется под лицензией **GNU General Public License v3.0 (GPL-3.0)**. Текст лицензии доступен в файле [LICENSE](LICENSE).
+Проект распространяется под лицензией GNU General Public License v3.0. Текст лицензии - в файле [LICENSE](LICENSE).

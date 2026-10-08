@@ -14,7 +14,7 @@ from gi.repository import Gtk
 
 from detail_cards.base import BaseWeatherHourlyArea
 from detail_cards.comparison_bar import DayComparisonBarArea
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class VisibilityHourlyArea(BaseWeatherHourlyArea):
@@ -125,7 +125,7 @@ class VisibilityHourlyArea(BaseWeatherHourlyArea):
                 cr.stroke()
 
                 cr.set_source_rgba(1, 1, 1, 0.40)
-                cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
                 cr.set_font_size(9)
                 cr.move_to(pad_l + plot_w + 6, y + 3)
                 cr.show_text(f"{v} км")
@@ -231,7 +231,6 @@ class VisibilityHourlyArea(BaseWeatherHourlyArea):
 
 def build_visibility_view(sheet) -> Gtk.Box:
     """Конструирует контейнер карточки видимости и связывает его с листом деталей."""
-    is_ru = (get_current_language() == "ru")
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
     box.set_valign(Gtk.Align.START)
 
@@ -239,7 +238,7 @@ def build_visibility_view(sheet) -> Gtk.Box:
     vis_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     vis_card.add_css_class("weather-glass-card")
 
-    lbl_v_title = Gtk.Label(label="ДАЛЬНОСТЬ ВИДИМОСТИ ПО ЧАСАМ" if is_ru else "HOURLY VISIBILITY DISTANCE")
+    lbl_v_title = Gtk.Label(label=t("weather_vis_hourly_hdr"))
     lbl_v_title.add_css_class("weather-section-title")
     lbl_v_title.set_halign(Gtk.Align.START)
     vis_card.append(lbl_v_title)
@@ -275,7 +274,7 @@ def build_visibility_view(sheet) -> Gtk.Box:
     stat_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     stat_card.add_css_class("weather-glass-card")
 
-    lbl_st_title = Gtk.Label(label="СОСТОЯНИЕ АТМОСФЕРЫ" if is_ru else "ATMOSPHERIC CLARITY")
+    lbl_st_title = Gtk.Label(label=t("weather_vis_clarity_hdr"))
     lbl_st_title.add_css_class("weather-section-title")
     lbl_st_title.set_halign(Gtk.Align.START)
     stat_card.append(lbl_st_title)
@@ -285,10 +284,10 @@ def build_visibility_view(sheet) -> Gtk.Box:
     stat_card.append(div_st)
 
     row_st1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_st1 = Gtk.Label(label="Текущая видимость" if is_ru else "Current visibility")
+    lbl_st1 = Gtk.Label(label=t("weather_vis_current"))
     lbl_st1.add_css_class("weather-body-text")
     row_st1.append(lbl_st1)
-    sheet.lbl_vis_km_val = Gtk.Label(label="-- км" if is_ru else "-- km")
+    sheet.lbl_vis_km_val = Gtk.Label(label=f"-- {t('unit_km')}")
     sheet.lbl_vis_km_val.add_css_class("weather-item-bold")
     sheet.lbl_vis_km_val.set_hexpand(True)
     sheet.lbl_vis_km_val.set_halign(Gtk.Align.END)
@@ -296,10 +295,10 @@ def build_visibility_view(sheet) -> Gtk.Box:
     stat_card.append(row_st1)
 
     row_st2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_st2 = Gtk.Label(label="Оценка прозрачности" if is_ru else "Clarity assessment")
+    lbl_st2 = Gtk.Label(label=t("weather_vis_assessment"))
     lbl_st2.add_css_class("weather-body-text")
     row_st2.append(lbl_st2)
-    sheet.lbl_vis_quality = Gtk.Label(label="Отличная" if is_ru else "Excellent")
+    sheet.lbl_vis_quality = Gtk.Label(label=t("weather_vis_excellent"))
     sheet.lbl_vis_quality.add_css_class("weather-item-bold")
     sheet.lbl_vis_quality.set_hexpand(True)
     sheet.lbl_vis_quality.set_halign(Gtk.Align.END)
@@ -318,7 +317,7 @@ def build_visibility_view(sheet) -> Gtk.Box:
     sheet.vis_comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sheet.vis_comp_card.add_css_class("weather-glass-card")
 
-    lbl_v_comp_title = Gtk.Label(label="СРАВНЕНИЕ ПО ДНЯМ" if is_ru else "DAY COMPARISON")
+    lbl_v_comp_title = Gtk.Label(label=t("weather_comp_days_hdr"))
     lbl_v_comp_title.add_css_class("weather-section-title")
     lbl_v_comp_title.set_halign(Gtk.Align.START)
     sheet.vis_comp_card.append(lbl_v_comp_title)
@@ -341,9 +340,7 @@ def build_visibility_view(sheet) -> Gtk.Box:
     # 4. Meteorological Visibility Scale Card
     v_scale_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     v_scale_card.add_css_class("weather-glass-card")
-    lbl_vs_title = Gtk.Label(
-        label="МЕТЕОРОЛОГИЧЕСКАЯ ШКАЛА ВИДИМОСТИ" if is_ru else "METEOROLOGICAL VISIBILITY SCALE"
-    )
+    lbl_vs_title = Gtk.Label(label=t("weather_vis_scale_hdr"))
     lbl_vs_title.add_css_class("weather-section-title")
     lbl_vs_title.set_halign(Gtk.Align.START)
     v_scale_card.append(lbl_vs_title)
@@ -351,12 +348,12 @@ def build_visibility_view(sheet) -> Gtk.Box:
     div_vs.add_css_class("weather-card-divider")
     v_scale_card.append(div_vs)
 
-    km_u = "км" if is_ru else "km"
+    km_u = t("unit_km")
     v_items = [
-        (f"< 1 {km_u}", "Густой туман" if is_ru else "Dense fog", "Сильное ограничение видимости, осторожность за рулем" if is_ru else "Severe driving hazard, zero horizon"),
-        (f"1 – 4 {km_u}", "Дымка / слабый туман" if is_ru else "Mist / Light fog", "Заметное помутнение воздуха из-за влаги или смога" if is_ru else "Haze or mist obscuring distant objects"),
-        (f"4 – 10 {km_u}", "Умеренная" if is_ru else "Moderate", "Горизонт слегка размыт, нормальная городская видимость" if is_ru else "Normal urban visibility"),
-        (f"> 10 {km_u}", "Отличная" if is_ru else "Excellent", "Идеально чистая атмосфера, четкий горизонт" if is_ru else "Crystal clear air, sharp distant landmarks"),
+        (f"< 1 {km_u}", t("weather_vis_scale_fog"), t("weather_vis_scale_fog_desc")),
+        (f"1 – 4 {km_u}", t("weather_vis_scale_mist"), t("weather_vis_scale_mist_desc")),
+        (f"4 – 10 {km_u}", t("weather_vis_scale_mod"), t("weather_vis_scale_mod_desc")),
+        (f"> 10 {km_u}", t("weather_vis_scale_exc"), t("weather_vis_scale_exc_desc")),
     ]
     for d_range, v_name, v_desc in v_items:
         r = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)

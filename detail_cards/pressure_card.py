@@ -14,7 +14,7 @@ from gi.repository import Gtk
 
 from detail_cards.base import BaseWeatherHourlyArea
 from detail_cards.comparison_bar import DayComparisonBarArea
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class PressureGaugeArea(Gtk.DrawingArea):
@@ -96,7 +96,7 @@ class PressureGaugeArea(Gtk.DrawingArea):
         cr.stroke()
 
         # 4. Числовое значение
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(17)
         val_str = f"{self.pressure_mm}"
         ext = cr.text_extents(val_str)
@@ -104,7 +104,7 @@ class PressureGaugeArea(Gtk.DrawingArea):
         cr.move_to(cx - ext.width / 2.0, cy - 10)
         cr.show_text(val_str)
 
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9)
         unit_str = "мм рт. ст." if get_current_language() == "ru" else "mmHg"
         ext_u = cr.text_extents(unit_str)
@@ -238,7 +238,7 @@ class PressureHourlyArea(BaseWeatherHourlyArea):
             cr.stroke()
 
             cr.set_source_rgba(1, 1, 1, 0.40)
-            cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(9)
             cr.move_to(pad_l + plot_w + 6, y + 3)
             cr.show_text(f"{v}")
@@ -344,7 +344,6 @@ class PressureHourlyArea(BaseWeatherHourlyArea):
 
 def build_pressure_view(sheet) -> Gtk.Box:
     """Конструирует контейнер карточки давления и связывает его с листом деталей."""
-    is_ru = (get_current_language() == "ru")
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
     box.set_valign(Gtk.Align.START)
 
@@ -352,7 +351,7 @@ def build_pressure_view(sheet) -> Gtk.Box:
     gauge_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     gauge_card.add_css_class("weather-glass-card")
 
-    lbl_g_title = Gtk.Label(label="БАРОМЕТР" if is_ru else "BAROMETER GAUGE")
+    lbl_g_title = Gtk.Label(label=t("weather_press_gauge_hdr"))
     lbl_g_title.add_css_class("weather-section-title")
     lbl_g_title.set_halign(Gtk.Align.START)
     gauge_card.append(lbl_g_title)
@@ -371,7 +370,7 @@ def build_pressure_view(sheet) -> Gtk.Box:
     trend_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     trend_card.add_css_class("weather-glass-card")
 
-    lbl_t_title = Gtk.Label(label="СУТОЧНЫЙ ТРЕНД ДАВЛЕНИЯ" if is_ru else "24-HOUR PRESSURE TREND")
+    lbl_t_title = Gtk.Label(label=t("weather_press_trend_hdr"))
     lbl_t_title.add_css_class("weather-section-title")
     lbl_t_title.set_halign(Gtk.Align.START)
     trend_card.append(lbl_t_title)
@@ -407,7 +406,7 @@ def build_pressure_view(sheet) -> Gtk.Box:
     val_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     val_card.add_css_class("weather-glass-card")
 
-    lbl_v_title = Gtk.Label(label="ПАРАМЕТРЫ ДАВЛЕНИЯ" if is_ru else "PRESSURE READINGS")
+    lbl_v_title = Gtk.Label(label=t("weather_press_readings_hdr"))
     lbl_v_title.add_css_class("weather-section-title")
     lbl_v_title.set_halign(Gtk.Align.START)
     val_card.append(lbl_v_title)
@@ -417,10 +416,10 @@ def build_pressure_view(sheet) -> Gtk.Box:
     val_card.append(div_v)
 
     row_pr1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_pr1 = Gtk.Label(label="В миллиметрах ртутного столба" if is_ru else "In millimeters of mercury")
+    lbl_pr1 = Gtk.Label(label=t("weather_press_mm_label"))
     lbl_pr1.add_css_class("weather-body-text")
     row_pr1.append(lbl_pr1)
-    sheet.lbl_press_val_mm = Gtk.Label(label="752 мм" if is_ru else "752 mmHg")
+    sheet.lbl_press_val_mm = Gtk.Label(label=f"752 {t('unit_mm')}")
     sheet.lbl_press_val_mm.add_css_class("weather-item-bold")
     sheet.lbl_press_val_mm.set_hexpand(True)
     sheet.lbl_press_val_mm.set_halign(Gtk.Align.END)
@@ -428,10 +427,10 @@ def build_pressure_view(sheet) -> Gtk.Box:
     val_card.append(row_pr1)
 
     row_pr2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_pr2 = Gtk.Label(label="В гектопаскалях (гПа / мбар)" if is_ru else "In hectopascals (hPa / mbar)")
+    lbl_pr2 = Gtk.Label(label=t("weather_press_hpa_label"))
     lbl_pr2.add_css_class("weather-body-text")
     row_pr2.append(lbl_pr2)
-    sheet.lbl_press_val_hpa = Gtk.Label(label="1003 гПа" if is_ru else "1003 hPa")
+    sheet.lbl_press_val_hpa = Gtk.Label(label="1003 hPa")
     sheet.lbl_press_val_hpa.add_css_class("weather-item-bold")
     sheet.lbl_press_val_hpa.set_hexpand(True)
     sheet.lbl_press_val_hpa.set_halign(Gtk.Align.END)
@@ -439,10 +438,10 @@ def build_pressure_view(sheet) -> Gtk.Box:
     val_card.append(row_pr2)
 
     row_pr3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_pr3 = Gtk.Label(label="Тенденция" if is_ru else "Barometric tendency")
+    lbl_pr3 = Gtk.Label(label=t("weather_press_tendency_label"))
     lbl_pr3.add_css_class("weather-body-text")
     row_pr3.append(lbl_pr3)
-    sheet.lbl_press_trend_desc = Gtk.Label(label="Стабильно" if is_ru else "Steady")
+    sheet.lbl_press_trend_desc = Gtk.Label(label=t("weather_press_steady_val"))
     sheet.lbl_press_trend_desc.add_css_class("weather-item-bold")
     sheet.lbl_press_trend_desc.set_hexpand(True)
     sheet.lbl_press_trend_desc.set_halign(Gtk.Align.END)
@@ -455,7 +454,7 @@ def build_pressure_view(sheet) -> Gtk.Box:
     sheet.press_comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sheet.press_comp_card.add_css_class("weather-glass-card")
 
-    lbl_pr_comp_title = Gtk.Label(label="СРАВНЕНИЕ ПО ДНЯМ" if is_ru else "DAY COMPARISON")
+    lbl_pr_comp_title = Gtk.Label(label=t("weather_comp_days_hdr"))
     lbl_pr_comp_title.add_css_class("weather-section-title")
     lbl_pr_comp_title.set_halign(Gtk.Align.START)
     sheet.press_comp_card.append(lbl_pr_comp_title)
@@ -478,22 +477,14 @@ def build_pressure_view(sheet) -> Gtk.Box:
     # 5. Medical & Atmospheric Guide Card
     med_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     med_card.add_css_class("weather-glass-card")
-    lbl_m_title = Gtk.Label(label="ВЛИЯНИЕ НА САМОЧУВСТВИЕ" if is_ru else "HEALTH & BAROMETRIC IMPACT")
+    lbl_m_title = Gtk.Label(label=t("weather_press_impact_hdr"))
     lbl_m_title.add_css_class("weather-section-title")
     lbl_m_title.set_halign(Gtk.Align.START)
     med_card.append(lbl_m_title)
     div_m = Gtk.Box()
     div_m.add_css_class("weather-card-divider")
     med_card.append(div_m)
-    lbl_m_text = Gtk.Label(
-        label=(
-            "Стандартным нормальным давлением на уровне моря считается 760 мм рт. ст. (1013 гПа). "
-            "При резком падении давления (прохождение циклона) у метеозависимых людей могут наблюдаться сонливость, головная боль и снижение тонуса. "
-            "При росте давления (антициклон) устанавливается ясная сухая погода."
-            if is_ru
-            else "Standard sea-level pressure is 760 mmHg (1013 hPa). Sudden pressure drops indicate an approaching cyclone, which can cause fatigue and headaches in barosensitive people. High pressure brings clear, stable conditions."
-        )
-    )
+    lbl_m_text = Gtk.Label(label=t("weather_press_impact_desc"))
     lbl_m_text.add_css_class("weather-body-text")
     lbl_m_text.set_wrap(True)
     lbl_m_text.set_halign(Gtk.Align.START)

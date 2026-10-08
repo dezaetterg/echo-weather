@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Echo Weather - Desktop Application Entrypoint
-A liquid glass meteorological experience for Linux desktops.
+Meteorological desktop application for Linux.
 """
 
 import os

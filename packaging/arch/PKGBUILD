@@ -2,9 +2,9 @@
 pkgname=echo-weather
 pkgver=1.0.0
 pkgrel=1
-pkgdesc="Atmospheric meteorological desktop application with liquid glass aesthetics"
+pkgdesc="Atmospheric meteorological desktop application for Linux"
 arch=('any')
-url="https://github.com/demid/echo-weather"
+url="https://github.com/dezaetterg/echo-weather"
 license=('GPL-3.0-or-later')
 depends=(
     'gtk4'

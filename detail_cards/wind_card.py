@@ -14,7 +14,7 @@ from gi.repository import Gtk
 
 from detail_cards.base import BaseWeatherHourlyArea
 from detail_cards.comparison_bar import DayComparisonBarArea
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class WindCompassArea(Gtk.DrawingArea):
@@ -70,7 +70,7 @@ class WindCompassArea(Gtk.DrawingArea):
             (180, "Ю" if is_ru else "S", (1, 1, 1, 0.65)),
             (270, "З" if is_ru else "W", (1, 1, 1, 0.65)),
         ]
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(10.5)
         for deg, lbl, col in cardinals:
             rad = math.radians(deg - 90)
@@ -120,11 +120,11 @@ class WindCompassArea(Gtk.DrawingArea):
         val_str = f"{self.wind_speed}"
         unit_str = " км/ч" if is_ru else " km/h"
 
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(21)
         ext_val = cr.text_extents(val_str)
 
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(12.5)
         ext_unit = cr.text_extents(unit_str)
 
@@ -132,13 +132,13 @@ class WindCompassArea(Gtk.DrawingArea):
         start_x = cx - total_w / 2.0
         base_y = height - 12
 
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(21)
         cr.set_source_rgba(1, 1, 1, 0.98)
         cr.move_to(start_x, base_y)
         cr.show_text(val_str)
 
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(12.5)
         cr.set_source_rgba(1, 1, 1, 0.65)
         cr.move_to(start_x + ext_val.width, base_y)
@@ -263,7 +263,7 @@ class WindHourlyArea(BaseWeatherHourlyArea):
             cr.stroke()
 
             cr.set_source_rgba(1, 1, 1, 0.42)
-            cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(9)
             cr.move_to(pad_l + plot_w + 6, y + 3)
             cr.show_text(f"{v}")
@@ -361,7 +361,7 @@ class WindHourlyArea(BaseWeatherHourlyArea):
 
         # 7. Легенда
         is_ru = (get_current_language() == "ru")
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9.5)
 
         cr.set_source_rgba(0.35, 0.80, 1.0, 0.95)
@@ -369,14 +369,14 @@ class WindHourlyArea(BaseWeatherHourlyArea):
         cr.fill()
         cr.set_source_rgba(1, 1, 1, 0.75)
         cr.move_to(pad_l + 20, 16)
-        cr.show_text("Ветер" if is_ru else "Wind")
+        cr.show_text(t("weather_wind_legend_wind"))
 
         cr.set_source_rgba(1.0, 0.65, 0.25, 0.85)
         cr.rectangle(pad_l + 80, 12, 12, 3)
         cr.fill()
         cr.set_source_rgba(1, 1, 1, 0.75)
         cr.move_to(pad_l + 96, 16)
-        cr.show_text("Порывы" if is_ru else "Gusts")
+        cr.show_text(t("weather_wind_legend_gusts"))
 
         # 8. Индикатор текущего часа
         if (not self.is_scrubbing) and self.is_today and 0 <= self.cur_hour < 24:
@@ -427,7 +427,6 @@ class WindHourlyArea(BaseWeatherHourlyArea):
 
 def build_wind_view(sheet) -> Gtk.Box:
     """Конструирует контейнер карточки ветра и связывает его с листом деталей."""
-    is_ru = (get_current_language() == "ru")
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
     box.set_valign(Gtk.Align.START)
 
@@ -435,7 +434,7 @@ def build_wind_view(sheet) -> Gtk.Box:
     comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     comp_card.add_css_class("weather-glass-card")
 
-    lbl_comp_title = Gtk.Label(label="НАПРАВЛЕНИЕ И СКОРОСТЬ ВЕТРА" if is_ru else "WIND DIRECTION & SPEED")
+    lbl_comp_title = Gtk.Label(label=t("weather_wind_comp_title"))
     lbl_comp_title.add_css_class("weather-section-title")
     lbl_comp_title.set_halign(Gtk.Align.START)
     comp_card.append(lbl_comp_title)
@@ -454,7 +453,7 @@ def build_wind_view(sheet) -> Gtk.Box:
     hourly_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     hourly_card.add_css_class("weather-glass-card")
 
-    lbl_h_title = Gtk.Label(label="ПОЧАСОВОЙ ГРАФИК ВЕТРА И ПОРЫВОВ" if is_ru else "HOURLY WIND & GUSTS GRAPH")
+    lbl_h_title = Gtk.Label(label=t("weather_wind_hourly_title"))
     lbl_h_title.add_css_class("weather-section-title")
     lbl_h_title.set_halign(Gtk.Align.START)
     hourly_card.append(lbl_h_title)
@@ -490,7 +489,7 @@ def build_wind_view(sheet) -> Gtk.Box:
     char_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     char_card.add_css_class("weather-glass-card")
 
-    lbl_char_title = Gtk.Label(label="ХАРАКТЕРИСТИКИ ВЕТРА" if is_ru else "WIND CHARACTERISTICS")
+    lbl_char_title = Gtk.Label(label=t("weather_wind_char_title"))
     lbl_char_title.add_css_class("weather-section-title")
     lbl_char_title.set_halign(Gtk.Align.START)
     char_card.append(lbl_char_title)
@@ -500,10 +499,10 @@ def build_wind_view(sheet) -> Gtk.Box:
     char_card.append(div_c)
 
     row_w1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_w1 = Gtk.Label(label="Максимальная скорость" if is_ru else "Max wind speed")
+    lbl_w1 = Gtk.Label(label=t("weather_wind_max_speed"))
     lbl_w1.add_css_class("weather-body-text")
     row_w1.append(lbl_w1)
-    sheet.lbl_wind_max = Gtk.Label(label="-- км/ч" if is_ru else "-- km/h")
+    sheet.lbl_wind_max = Gtk.Label(label=f"-- {t('unit_kmh')}")
     sheet.lbl_wind_max.add_css_class("weather-item-bold")
     sheet.lbl_wind_max.set_hexpand(True)
     sheet.lbl_wind_max.set_halign(Gtk.Align.END)
@@ -511,10 +510,10 @@ def build_wind_view(sheet) -> Gtk.Box:
     char_card.append(row_w1)
 
     row_w2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_w2 = Gtk.Label(label="Максимальные порывы" if is_ru else "Peak gusts")
+    lbl_w2 = Gtk.Label(label=t("weather_wind_peak_gusts"))
     lbl_w2.add_css_class("weather-body-text")
     row_w2.append(lbl_w2)
-    sheet.lbl_wind_gusts_max = Gtk.Label(label="-- км/ч" if is_ru else "-- km/h")
+    sheet.lbl_wind_gusts_max = Gtk.Label(label=f"-- {t('unit_kmh')}")
     sheet.lbl_wind_gusts_max.add_css_class("weather-item-bold")
     sheet.lbl_wind_gusts_max.set_hexpand(True)
     sheet.lbl_wind_gusts_max.set_halign(Gtk.Align.END)
@@ -522,7 +521,7 @@ def build_wind_view(sheet) -> Gtk.Box:
     char_card.append(row_w2)
 
     row_w3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_w3 = Gtk.Label(label="Преобладающее направление" if is_ru else "Dominant direction")
+    lbl_w3 = Gtk.Label(label=t("weather_wind_dominant_dir"))
     lbl_w3.add_css_class("weather-body-text")
     row_w3.append(lbl_w3)
     sheet.lbl_wind_dir_name = Gtk.Label(label="--")
@@ -538,7 +537,7 @@ def build_wind_view(sheet) -> Gtk.Box:
     sheet.wind_comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sheet.wind_comp_card.add_css_class("weather-glass-card")
 
-    lbl_w_comp_title = Gtk.Label(label="СРАВНЕНИЕ ПО ДНЯМ" if is_ru else "DAY COMPARISON")
+    lbl_w_comp_title = Gtk.Label(label=t("weather_comp_days_hdr"))
     lbl_w_comp_title.add_css_class("weather-section-title")
     lbl_w_comp_title.set_halign(Gtk.Align.START)
     sheet.wind_comp_card.append(lbl_w_comp_title)
@@ -561,7 +560,7 @@ def build_wind_view(sheet) -> Gtk.Box:
     # 5. Beaufort Scale Reference Card
     bft_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     bft_card.add_css_class("weather-glass-card")
-    lbl_bft_title = Gtk.Label(label="ШКАЛА БОФОРТА" if is_ru else "BEAUFORT SCALE")
+    lbl_bft_title = Gtk.Label(label=t("weather_wind_bft_title"))
     lbl_bft_title.add_css_class("weather-section-title")
     lbl_bft_title.set_halign(Gtk.Align.START)
     bft_card.append(lbl_bft_title)
@@ -569,13 +568,13 @@ def build_wind_view(sheet) -> Gtk.Box:
     div_b.add_css_class("weather-card-divider")
     bft_card.append(div_b)
 
-    spd_u = "км/ч" if is_ru else "km/h"
+    spd_u = t("unit_kmh")
     bft_rows = [
-        (f"< 6 {spd_u}", "Штиль / тихий" if is_ru else "Calm / Light air", "Дым поднимается почти вертикально" if is_ru else "Smoke rises vertically"),
-        (f"6 – 19 {spd_u}", "Легкий / слабый" if is_ru else "Light / Gentle breeze", "Листья шелестят, флюгер движется" if is_ru else "Leaves rustle, vanes moved"),
-        (f"20 – 38 {spd_u}", "Умеренный / свежий" if is_ru else "Moderate / Fresh breeze", "Колышутся тонкие ветви, поднимается пыль" if is_ru else "Small trees begin to sway"),
-        (f"39 – 61 {spd_u}", "Сильный / крепкий" if is_ru else "Strong breeze / Gale", "Качаются большие ветви, зонты гнутся" if is_ru else "Large branches in motion"),
-        (f"62+ {spd_u}", "Шторм / буря" if is_ru else "Storm / Gale", "Ломаются сучья деревьев, трудно идти" if is_ru else "Structural damage possible"),
+        (f"< 6 {spd_u}", t("weather_bft_calm"), t("weather_bft_calm_desc")),
+        (f"6 – 19 {spd_u}", t("weather_bft_light"), t("weather_bft_light_desc")),
+        (f"20 – 38 {spd_u}", t("weather_bft_moderate"), t("weather_bft_moderate_desc")),
+        (f"39 – 61 {spd_u}", t("weather_bft_strong"), t("weather_bft_strong_desc")),
+        (f"62+ {spd_u}", t("weather_bft_storm"), t("weather_bft_storm_desc")),
     ]
     for spd_r, b_name, b_desc in bft_rows:
         r = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)

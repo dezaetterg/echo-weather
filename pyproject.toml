@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "echo-weather"
 version = "1.0.0"
-description = "Atmospheric meteorological desktop application with liquid glass aesthetics"
+description = "Atmospheric meteorological desktop application for Linux"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.10"
@@ -19,8 +19,8 @@ keywords = [
     "cairo",
     "linux-desktop",
     "forecast",
-    "liquid-glass",
-    "atmosphere"
+    "atmosphere",
+    "open-meteo"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

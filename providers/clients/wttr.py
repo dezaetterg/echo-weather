@@ -187,16 +187,15 @@ class WttrClient(BaseWeatherClient):
                 "icon_file": os.path.join(ICONS_DIR, h_ic),
             })
 
-        climate_averages = calculate_climate_averages(lat, lon, t_max, t_min, is_ru=is_ru)
-        avg_diff_str = climate_averages.get("temp_diff_str_short", "0°")
+        climate_averages = calculate_climate_averages(lat, lon, t_max, t_min, lang=lang)
+        diff_val = climate_averages.get("temp_diff_str_short") or climate_averages.get("temp_diff_str") or "0°"
+        if not diff_val.endswith("°"):
+            diff_val = f"{diff_val}°"
+        avg_diff_str = t("weather_climate_vs_norm", diff=diff_val)
         avg_norm_max = climate_averages.get("temp_avg_max", t_max)
-        diff_avg = climate_averages.get("temp_diff", 0)
-        if diff_avg > 0:
-            avg_desc = f"выше средней макс. температуры {avg_norm_max}° сегодня." if is_ru else f"above average high of {avg_norm_max}° today."
-        elif diff_avg < 0:
-            avg_desc = f"ниже средней макс. температуры {avg_norm_max}° сегодня." if is_ru else f"below average high of {avg_norm_max}° today."
-        else:
-            avg_desc = f"соответствует средней макс. температуре {avg_norm_max}° сегодня." if is_ru else f"matches average high of {avg_norm_max}° today."
+        avg_desc = climate_averages.get("summary_temp") or (
+            t("weather_climate_near_norm")
+        )
 
         wind_cardinal, wind_desc = get_wind_direction_info(wind_dir, lang=lang)
         max_gust = round(float(curr.get("windspeedKmph", 0)) * 1.3 / 3.6, 1)

@@ -241,7 +241,7 @@ def test_stress_animation_loop_cpu():
     assert box._tick_id is None
 
 
-def test_liquid_glass_button_styles():
+def test_weather_button_styles():
     import gi
     gi.require_version("Gtk", "4.0")
     from gi.repository import Gtk
@@ -256,7 +256,7 @@ def test_liquid_glass_button_styles():
     with open(css_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Verify universal liquid glass button reset and specific button classes
+    # Verify universal button reset and specific button classes
     assert "window.weather-window button" in content
     assert "button.city-pill-btn" in content
     assert "button.unit-toggle-btn" in content

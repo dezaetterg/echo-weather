@@ -10,9 +10,18 @@ import calendar
 import math
 from datetime import date, datetime, timedelta, timezone
 
+from i18n import (
+    format_day_month,
+    get_current_language,
+    get_month_name,
+    get_weekday_name,
+    t,
+)
 
-def calculate_moon_phase(dt: datetime | None = None) -> dict:
+
+def calculate_moon_phase(dt: datetime | None = None, is_ru: bool | None = None, lang: str | None = None) -> dict:
     """Вычисление базовой фазы Луны и возраста цикла."""
+    target_lang = lang or (get_current_language() if is_ru is None else ('ru' if is_ru else 'en'))
     if dt is None:
         dt = datetime.now(timezone.utc)
     ref_new_moon = datetime(2024, 1, 11, 11, 57, tzinfo=timezone.utc)
@@ -28,28 +37,33 @@ def calculate_moon_phase(dt: datetime | None = None) -> dict:
         days_to_full = (1.5 - cycle_frac) * synodic_month
 
     if cycle_frac < 0.03 or cycle_frac >= 0.97:
-        p_ru, p_en = 'Новолуние', 'New Moon'
+        phase_key = 'weather_moon_phase_new'
     elif cycle_frac < 0.22:
-        p_ru, p_en = 'Молодая луна', 'Waxing Crescent'
+        phase_key = 'weather_moon_phase_waxing_crescent'
     elif cycle_frac < 0.28:
-        p_ru, p_en = 'Первая четверть', 'First Quarter'
+        phase_key = 'weather_moon_phase_first_quarter'
     elif cycle_frac < 0.47:
-        p_ru, p_en = 'Прибывающая луна', 'Waxing Gibbous'
+        phase_key = 'weather_moon_phase_waxing_gibbous'
     elif cycle_frac < 0.53:
-        p_ru, p_en = 'Полнолуние', 'Full Moon'
+        phase_key = 'weather_moon_phase_full'
     elif cycle_frac < 0.72:
-        p_ru, p_en = 'Убывающая луна', 'Waning Gibbous'
+        phase_key = 'weather_moon_phase_waning_gibbous'
     elif cycle_frac < 0.78:
-        p_ru, p_en = 'Последняя четверть', 'Last Quarter'
+        phase_key = 'weather_moon_phase_last_quarter'
     else:
-        p_ru, p_en = 'Старая луна', 'Waning Crescent'
+        phase_key = 'weather_moon_phase_waning_crescent'
+
+    phase_name = t(phase_key, lang=target_lang)
+    p_ru = t(phase_key, lang='ru')
+    p_en = t(phase_key, lang='en')
 
     return {
         'cycle_fraction': cycle_frac,
         'age_days': round(age_days, 1),
         'illumination': round(illumination),
         'days_to_full': max(0, round(days_to_full)),
-        'phase_name': p_ru,
+        'phase_name': phase_name,
+        'phase_name_ru': p_ru,
         'phase_name_en': p_en
     }
 
@@ -59,7 +73,8 @@ def calculate_solar_details(
     lon: float,
     dt: date | None = None,
     utc_offset_hours: float = 0.0,
-    is_ru: bool = True
+    is_ru: bool | None = None,
+    lang: str | None = None,
 ) -> dict:
     """Расчет моментов первого света, восхода, захода, последнего света и высоты Солнца по NOAA."""
     if dt is None:
@@ -133,10 +148,8 @@ def calculate_solar_details(
 
     dl_h = int(daylight_min // 60)
     dl_m = int(round(daylight_min % 60))
-    if is_ru:
-        daylight_str = f'{dl_h} ч {dl_m} мин'
-    else:
-        daylight_str = f'{dl_h} hr {dl_m} min'
+    target_lang = lang or (get_current_language() if is_ru is None else ('ru' if is_ru else 'en'))
+    daylight_str = t('weather_sun_daylight_val', h=dl_h, m=dl_m, lang=target_lang)
 
     curve_points = []
     for step in range(97):
@@ -168,12 +181,12 @@ def calculate_annual_solar_table(
     lat: float,
     lon: float,
     utc_offset_hours: float = 0.0,
-    is_ru: bool = True
+    is_ru: bool | None = None,
+    lang: str | None = None,
 ) -> dict:
     """Расчет годовой таблицы восходов и заходов по месяцам, а также дня солнцестояния."""
-    months_ru = ['янв.', 'февр.', 'март', 'апр.', 'май', 'июнь', 'июль', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.']
-    months_en = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    month_names = months_ru if is_ru else months_en
+    target_lang = lang or (get_current_language() if is_ru is None else ('ru' if is_ru else 'en'))
+    month_names = [get_month_name(m, short=True, lang=target_lang) for m in range(1, 13)]
 
     cur_month = datetime.now().month
     year = datetime.now().year
@@ -278,12 +291,8 @@ def calculate_annual_solar_table(
     dl_sol_h = int(dl_sol_min // 60)
     dl_sol_m = int(round(dl_sol_min % 60))
 
-    if is_ru:
-        sol_date_str = '21 июня' if lat >= 0 else '21 декабря'
-        longest_day_str = f'Самый длинный световой день: {sol_date_str} — {dl_sol_h} ч {dl_sol_m} мин'
-    else:
-        sol_date_str = 'June 21' if lat >= 0 else 'December 21'
-        longest_day_str = f'Longest daylight: {sol_date_str} — {dl_sol_h} hr {dl_sol_m} min'
+    sol_date_str = format_day_month(21, 6 if lat >= 0 else 12, lang=target_lang)
+    longest_day_str = t('weather_sun_longest_day', date=sol_date_str, h=dl_sol_h, m=dl_sol_m, lang=target_lang)
 
     return {
         'months': monthly_rows,
@@ -419,9 +428,11 @@ def calculate_detailed_moon(
     lon: float,
     target_dt: datetime | None = None,
     utc_offset_hours: float = 0.0,
-    is_ru: bool = True
+    is_ru: bool | None = None,
+    lang: str | None = None,
 ) -> dict:
     """Полный расчет параметров Луны: фаза, освещенность, расстояние, время восхода/захода, наклон."""
+    target_lang = lang or (get_current_language() if is_ru is None else ('ru' if is_ru else 'en'))
     if target_dt is None:
         target_dt = datetime.now(timezone.utc) + timedelta(hours=utc_offset_hours)
 
@@ -447,23 +458,25 @@ def calculate_detailed_moon(
     days_to_new = (1.0 - cycle_frac) * synodic
 
     if cycle_frac < 0.03 or cycle_frac >= 0.97:
-        p_ru, p_en = 'Новолуние', 'New Moon'
+        phase_key = 'weather_moon_phase_new'
     elif cycle_frac < 0.22:
-        p_ru, p_en = 'Молодая луна', 'Waxing Crescent'
+        phase_key = 'weather_moon_phase_waxing_crescent'
     elif cycle_frac < 0.28:
-        p_ru, p_en = 'Первая четверть', 'First Quarter'
+        phase_key = 'weather_moon_phase_first_quarter'
     elif cycle_frac < 0.47:
-        p_ru, p_en = 'Прибывающая луна', 'Waxing Gibbous'
+        phase_key = 'weather_moon_phase_waxing_gibbous'
     elif cycle_frac < 0.53:
-        p_ru, p_en = 'Полнолуние', 'Full Moon'
+        phase_key = 'weather_moon_phase_full'
     elif cycle_frac < 0.72:
-        p_ru, p_en = 'Убывающая луна', 'Waning Gibbous'
+        phase_key = 'weather_moon_phase_waning_gibbous'
     elif cycle_frac < 0.78:
-        p_ru, p_en = 'Последняя четверть', 'Last Quarter'
+        phase_key = 'weather_moon_phase_last_quarter'
     else:
-        p_ru, p_en = 'Старая луна', 'Waning Crescent'
+        phase_key = 'weather_moon_phase_waning_crescent'
 
-    phase_name = p_ru if is_ru else p_en
+    phase_name = t(phase_key, lang=target_lang)
+    p_ru = t(phase_key, lang='ru')
+    p_en = t(phase_key, lang='en')
     dist_km = calculate_lunar_distance_km(dt_utc)
 
     local_date = (dt_utc + timedelta(hours=utc_offset_hours)).date()
@@ -472,21 +485,18 @@ def calculate_detailed_moon(
     dt_full = target_dt + timedelta(days=days_to_full)
     dt_new = target_dt + timedelta(days=days_to_new)
 
-    ru_months = ['', 'янв.', 'февр.', 'марта', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.']
-    en_months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    ru_days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
-    en_days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
     def fmt_d(d_val: datetime) -> str:
-        m_str = ru_months[d_val.month] if is_ru else en_months[d_val.month]
-        d_str = ru_days[d_val.weekday()] if is_ru else en_days[d_val.weekday()]
-        return f'{d_str}, {d_val.day} {m_str}'
+        d_str = get_weekday_name(d_val.weekday(), lang=target_lang)
+        dm_str = format_day_month(d_val.day, d_val.month, lang=target_lang)
+        return f'{d_str}, {dm_str}'
 
     full_moon_date_str = fmt_d(dt_full)
     new_moon_date_str = fmt_d(dt_new)
 
     h_frac = target_dt.hour + target_dt.minute / 60.0
     tilt_deg = 15.0 * math.sin(2 * math.pi * (cycle_frac - 0.25)) - 10.0 * math.cos(h_frac * math.pi / 12.0)
+
+    dist_u = t('unit_km', lang=target_lang)
 
     return {
         'cycle_fraction': cycle_frac,
@@ -497,7 +507,7 @@ def calculate_detailed_moon(
         'age_days': round(age_days, 1),
         'days_to_full': max(0, int(round(days_to_full))),
         'distance_km': dist_km,
-        'distance_str': f'{dist_km:,}'.replace(',', ' ') + (' км' if is_ru else ' km'),
+        'distance_str': f'{dist_km:,}'.replace(',', ' ') + f' {dist_u}',
         'moonrise': rise_str,
         'moonset': set_str,
         'next_full_moon_date_str': full_moon_date_str,
@@ -506,8 +516,9 @@ def calculate_detailed_moon(
     }
 
 
-def calculate_month_moon_calendar(year: int, month: int, is_ru: bool = True) -> dict:
+def calculate_month_moon_calendar(year: int, month: int, is_ru: bool | None = None, lang: str | None = None) -> dict:
     """Генерация лунного календаря на заданный месяц и год."""
+    target_lang = lang or (get_current_language() if is_ru is None else ('ru' if is_ru else 'en'))
     ref_new_moon = datetime(2024, 1, 11, 11, 57, tzinfo=timezone.utc)
     synodic = 29.53058867
 
@@ -528,12 +539,13 @@ def calculate_month_moon_calendar(year: int, month: int, is_ru: bool = True) -> 
             'illumination': int(round(illum)),
         })
 
-    ru_months_nominative = ['', 'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь']
-    en_months_nominative = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-    m_name = ru_months_nominative[month] if is_ru else en_months_nominative[month]
-    year_suffix = ' г.' if is_ru else ''
-    title = f'{m_name} {year}{year_suffix}'
+    m_name = get_month_name(month, short=False, lang=target_lang).capitalize()
+    if target_lang == 'ru':
+        title = f'{m_name} {year} г.'
+    elif target_lang in ('zh', 'ja'):
+        title = f'{year}年{month}月'
+    else:
+        title = f'{m_name} {year}'
 
     return {
         'year': year,

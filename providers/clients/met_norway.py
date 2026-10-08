@@ -16,7 +16,7 @@ from typing import Any
 from i18n import get_current_language, t
 from logger import get_logger
 from providers.clients.base import BaseWeatherClient
-from services.astronomy import calculate_detailed_moon, calculate_solar_details, compute_solar_uv
+from services.astronomy import calculate_annual_solar_table, calculate_detailed_moon, calculate_solar_details, compute_solar_uv
 
 logger = get_logger("weather.met_norway")
 
@@ -125,7 +125,8 @@ class MetNorwayClient(BaseWeatherClient):
         press_mm = round(press_hpa * 0.750062)
         curr_cloud = float(cur_instant.get("cloud_area_fraction", 0.0))
 
-        solar_details = calculate_solar_details(lat, lon, city_now.date(), utc_offset / 3600.0, is_ru=(get_current_language() == "ru"))
+        solar_details = calculate_solar_details(lat, lon, city_now.date(), utc_offset / 3600.0, lang=lang)
+        solar_details["annual_table"] = calculate_annual_solar_table(lat, lon, utc_offset / 3600.0, lang=lang)
         sr_str = solar_details.get("sunrise", "06:00")
         ss_str = solar_details.get("sunset", "19:00")
         sunrise_str = sr_str
@@ -303,6 +304,38 @@ class MetNorwayClient(BaseWeatherClient):
                 uv_h = compute_solar_uv(lat, dt_h_d, cloud_pct=h24_clouds[hr])
                 h24_uvs.append(uv_h)
 
+            h24_vis_km = []
+            for hr in range(24):
+                t_h = h24_temps[hr]
+                dew_h = h24_dews[hr]
+                hum_h = h24_hums[hr]
+                pr_h = h24_precips[hr]
+                code_h = h24_codes[hr]
+
+                dd = max(0.0, t_h - dew_h)
+                if code_h in (45, 48):
+                    v = 0.4 + min(1.2, dd * 0.4)
+                elif pr_h > 5.0 or code_h in (65, 82, 95, 96, 99):
+                    v = 2.0 + max(0.0, 2.0 - pr_h * 0.1)
+                elif pr_h > 1.0 or code_h in (63, 73, 75, 81):
+                    v = 4.0 + min(3.0, dd * 0.5)
+                elif pr_h > 0.0 or code_h in (51, 53, 55, 61, 71, 80):
+                    v = 6.0 + min(3.0, dd * 0.5)
+                else:
+                    if hum_h >= 95 or dd <= 0.5:
+                        v = 2.5 + dd * 2.0
+                    elif hum_h >= 85 or dd <= 1.5:
+                        v = 5.0 + dd * 2.0
+                    elif hum_h >= 75 or dd <= 3.0:
+                        v = 7.5 + dd * 1.0
+                    else:
+                        v = 10.0 + max(0.0, (80.0 - hum_h) * 0.05)
+                v = round(max(0.3, min(14.0, v)), 1)
+                h24_vis_km.append(v)
+
+            day_min_vis = min(h24_vis_km)
+            day_max_vis = max(h24_vis_km)
+
             cardinal_d, desc_d = get_wind_direction_info(h24_wind_dirs[12], lang=lang)
 
             day_item_live = {
@@ -353,7 +386,7 @@ class MetNorwayClient(BaseWeatherClient):
                 "hourly_uvs": h24_uvs,
                 "hourly_hums": h24_hums,
                 "hourly_dews": h24_dews,
-                "hourly_vis_km": [10.0] * 24,
+                "hourly_vis_km": h24_vis_km,
                 "hourly_press_mm": h24_press_mm,
                 "hourly_press_hpa": h24_press_hpa,
                 "uv_max": max(h24_uvs),
@@ -364,8 +397,8 @@ class MetNorwayClient(BaseWeatherClient):
                 "dominant_wind_desc": desc_d,
                 "min_humidity": min(h24_hums),
                 "max_humidity": max(h24_hums),
-                "min_visibility_km": 10.0,
-                "max_visibility_km": 10.0,
+                "min_visibility_km": day_min_vis,
+                "max_visibility_km": day_max_vis,
                 "min_pressure_mm": min(h24_press_mm),
                 "max_pressure_mm": max(h24_press_mm),
                 "summary": d_summary,
@@ -394,10 +427,10 @@ class MetNorwayClient(BaseWeatherClient):
             "yesterday_avg_pressure_mm": press_mm,
         }
 
-        detailed_moon = calculate_detailed_moon(lat, lon, city_now, utc_offset / 3600.0, is_ru=is_ru)
+        detailed_moon = calculate_detailed_moon(lat, lon, city_now, utc_offset / 3600.0, lang=lang)
 
         hourly_today_for_climate = [{"temp": h["temp"]} for h in hourly_list[:24]]
-        climate_averages = calculate_climate_averages(lat, lon, t_max, t_min, hourly_today=hourly_today_for_climate, is_ru=is_ru)
+        climate_averages = calculate_climate_averages(lat, lon, t_max, t_min, hourly_today=hourly_today_for_climate, lang=lang)
 
         w_info = WMO_INFO.get(w_code, WMO_INFO[0])
         cond_text = get_condition_text(w_code, lang=lang, is_day=(is_day == 1))
@@ -413,6 +446,9 @@ class MetNorwayClient(BaseWeatherClient):
 
         precip_sum = round(sum(d.get("precip_sum", 0.0) for d in days_detailed[:1]), 1)
 
+        diff_val = climate_averages.get("temp_diff_str_short") or climate_averages.get("temp_diff_str") or "0°"
+        cur_vis_km = days_detailed[0]["hourly_vis_km"][city_now.hour] if (days_detailed and len(days_detailed[0].get("hourly_vis_km", [])) > city_now.hour) else 10.0
+
         weather_dict = {
             "city_name": city_name,
             "country": country,
@@ -420,10 +456,10 @@ class MetNorwayClient(BaseWeatherClient):
             "lon": lon,
             "temp": temp,
             "feels_like": feels_like,
-            "feels_like_desc": "Похоже на фактическую температуру." if is_ru else "Feels like actual temperature.",
-            "avg_diff_str": f"{climate_averages.get('temp_diff_str_short') or climate_averages.get('temp_diff_str', '0°')} к норме" if is_ru else f"{climate_averages.get('temp_diff_str_short') or climate_averages.get('temp_diff_str', '0°')} vs norm",
+            "feels_like_desc": t("weather_feels_balanced"),
+            "avg_diff_str": t("weather_climate_vs_norm", diff=diff_val),
             "avg_norm_max": climate_averages.get("temp_avg_max", t_max),
-            "avg_desc": climate_averages.get("summary_temp") or ("Температура около многолетней климатической нормы." if is_ru else "Temperature close to long-term climate average."),
+            "avg_desc": climate_averages.get("summary_temp") or t("weather_climate_near_norm"),
             "humidity": humidity,
             "dew_point": dew_point,
             "wind_speed": wind,
@@ -432,15 +468,15 @@ class MetNorwayClient(BaseWeatherClient):
             "wind_cardinal": wind_cardinal,
             "wind_desc": wind_desc,
             "pressure_mm": press_mm,
-            "pressure_desc": "Нормальное давление." if is_ru else "Normal pressure.",
+            "pressure_desc": t("weather_pressure_normal"),
             "uv_index": curr_uv,
-            "uv_level": "Умеренный" if is_ru else "Moderate",
-            "uv_desc": "Используйте защиту от солнца." if is_ru else "Use sun protection.",
-            "visibility_km": 10,
-            "visibility_desc": "Отличная видимость." if is_ru else "Perfect visibility.",
+            "uv_level": t("weather_uv_moderate"),
+            "uv_desc": t("weather_uv_moderate_desc"),
+            "visibility_km": cur_vis_km,
+            "visibility_desc": t("weather_visibility_clear"),
             "precipitation": precipitation,
             "precipitation_sum": precip_sum,
-            "precip_desc": "Осадков не ожидается." if is_ru else "No precipitation expected.",
+            "precip_desc": t("weather_precip_no_expected"),
             "sunrise_str": sunrise_str,
             "sunset_str": sunset_str,
             "is_day": is_day,

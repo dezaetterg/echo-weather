@@ -1,11 +1,12 @@
 """
 Echo Weather - Overview View (Level 1)
-Apple Weather inspired overview screen featuring Hero widget, 24-hour forecast strip,
-10-day forecast with capsule temperature bars, and interactive Bento Grid cards.
+Overview screen with current conditions, 24-hour forecast strip,
+10-day forecast with temperature bars, and modular metrics grid.
 """
 
 import math
 import os
+import re
 from datetime import datetime
 
 import cairo
@@ -14,9 +15,10 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
-from data.wmo_conditions import MAJOR_CITIES, get_condition_text, get_weekday_name
-from i18n import get_current_language, t
+from data.wmo_conditions import MAJOR_CITIES, get_condition_text, get_weekday_name, get_wind_direction_info
+from i18n import format_day_month, get_current_language, t
 from providers.weather import ICONS_DIR, convert_temp
+from services.astronomy import calculate_moon_phase
 from weather_detail_sheet import MiniMoonIcon, TempCapsuleBarArea
 
 
@@ -334,8 +336,9 @@ class MiniClimateNormGauge(Gtk.DrawingArea):
         # Parse diff delta
         delta = 0.0
         try:
-            cleaned = self.avg_diff_str.replace("°", "").replace("к норме", "").replace("vs norm", "").strip()
-            delta = float(cleaned)
+            m = re.search(r'([+-]?\d+(?:\.\d+)?)', self.avg_diff_str)
+            if m:
+                delta = float(m.group(1))
         except Exception:
             delta = 0.0
 
@@ -448,7 +451,7 @@ class VerticalTempBarArea(Gtk.DrawingArea):
 
 
 class WeatherOverviewView(Gtk.Box):
-    """Level 1 Overview screen styled after Apple Weather."""
+    """Level 1 Overview screen displaying current weather and metrics grid."""
 
     def __init__(
         self,
@@ -547,6 +550,20 @@ class WeatherOverviewView(Gtk.Box):
         self.content_box.append(daily_card)
         self.content_box.append(bento_grid)
 
+    def _get_dynamic_summary(self, lang: str | None = None) -> str:
+        target_lang = lang or get_current_language()
+        w_code = self.data.get("weather_code", 0)
+        is_day = bool(self.data.get("is_day", 1) == 1)
+        max_gust = round(self.data.get("wind_gusts", round(self.data.get("wind_speed", 0))))
+        cond_text = get_condition_text(w_code, lang=target_lang, is_day=is_day)
+        if is_day and w_code in (0, 1):
+            return t("weather_summary_clear_day", _lang=target_lang, gust=max_gust)
+        elif not is_day and w_code in (0, 1):
+            return t("weather_summary_clear_night", _lang=target_lang, gust=max_gust)
+        elif w_code in (51, 53, 55, 56, 57) or self.data.get("grad_type") == "drizzle":
+            return t("weather_summary_drizzle", _lang=target_lang, gust=max_gust)
+        return t("weather_summary_generic", _lang=target_lang, gust=max_gust, condition=cond_text)
+
     def _build_hero_widget(self) -> Gtk.Widget:
         curr_lang = get_current_language()
         is_ru = (curr_lang == "ru")
@@ -601,7 +618,7 @@ class WeatherOverviewView(Gtk.Box):
         if lat is not None and lon is not None:
             coord_str = f"{abs(lat):.2f}°{'N' if lat >= 0 else 'S'}, {abs(lon):.2f}°{'E' if lon >= 0 else 'W'}"
         else:
-            coord_str = "МЕТЕОСТАНЦИЯ" if is_ru else "METEO STATION"
+            coord_str = t("weather_meteo_station")
 
         tag_box = Gtk.Box()
         tag_box.add_css_class("weather-hero-coord-tag")
@@ -679,7 +696,7 @@ class WeatherOverviewView(Gtk.Box):
         cond_lbl.set_xalign(0.0)
         cond_box.append(cond_lbl)
 
-        summary_hint = self.data.get("summary") or ("Стабильные метеоусловия" if is_ru else "Steady conditions")
+        summary_hint = self._get_dynamic_summary(curr_lang)
         if len(summary_hint) > 42:
             summary_hint = summary_hint[:40] + "..."
         trend_lbl = Gtk.Label(label=summary_hint)
@@ -712,8 +729,6 @@ class WeatherOverviewView(Gtk.Box):
         feels_chip = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
         feels_chip.add_css_class("weather-hero-chip")
         feels_label_str = t("weather_feels_like")
-        if feels_label_str == "weather_feels_like":
-            feels_label_str = "Ощущается" if is_ru else "Feels like"
         feels_lbl = Gtk.Label(label=f"{feels_label_str} {feels}°")
         feels_lbl.add_css_class("weather-hero-chip-text")
         feels_chip.append(feels_lbl)
@@ -722,7 +737,7 @@ class WeatherOverviewView(Gtk.Box):
         # Wind chip
         w_speed = round(self.data.get("wind_speed", 0))
         w_card = self.data.get("wind_cardinal", "С")
-        w_unit = "км/ч" if is_ru else "km/h"
+        w_unit = t("unit_kmh")
         wind_chip = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
         wind_chip.add_css_class("weather-hero-chip")
         wind_lbl = Gtk.Label(label=f"{w_card} {w_speed} {w_unit}")
@@ -756,15 +771,21 @@ class WeatherOverviewView(Gtk.Box):
 
         model_badge = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
         model_badge.add_css_class("weather-hero-model-tag")
+        is_fallback = bool(self.data.get("is_fallback", False))
+        if is_fallback:
+            model_badge.add_css_class("weather-hero-model-fallback")
+            fallback_reason = self.data.get("fallback_reason") or t("weather_source_fallback_badge")
+            model_badge.set_tooltip_text(fallback_reason)
+
         curr_src = self.data.get("forecast_source", "consensus")
         src_names = {
-            "consensus": "Консенсус (ECMWF + ICON + MET Norway)" if is_ru else "Consensus (ECMWF + ICON + MET Norway)",
-            "ecmwf": "ECMWF IFS (Европа)" if is_ru else "ECMWF IFS (Europe)",
-            "icon": "DWD ICON (Германия)" if is_ru else "DWD ICON (Germany)",
-            "met_norway": "MET Norway",
-            "open_meteo": "Open-Meteo",
+            "consensus": t("weather_source_consensus_title"),
+            "ecmwf": t("weather_source_ecmwf_title"),
+            "icon": t("weather_source_icon_title"),
+            "met_norway": t("weather_source_met_title"),
+            "open_meteo": t("weather_source_om_title"),
         }
-        source_name = src_names.get(curr_src) or self.data.get("source_name") or "MET Norway / Open-Meteo"
+        source_name = self.data.get("source_name") or src_names.get(curr_src) or "MET Norway / Open-Meteo"
         model_lbl = Gtk.Label(label=f"● {source_name}")
         model_lbl.add_css_class("weather-hero-model-text")
         model_badge.append(model_lbl)
@@ -774,7 +795,6 @@ class WeatherOverviewView(Gtk.Box):
         return hero_card
 
     def _build_hourly_card(self) -> Gtk.Widget:
-        is_ru = (get_current_language() == "ru")
         card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         card.add_css_class("weather-glass-card")
         card.add_css_class("weather-card-clickable")
@@ -785,9 +805,7 @@ class WeatherOverviewView(Gtk.Box):
         card.add_controller(click_gesture)
 
         # Card summary header
-        summary_text = self.data.get("summary") or (
-            "В течение дня сохранится устойчивая погода." if is_ru else "Conditions remain steady today."
-        )
+        summary_text = self._get_dynamic_summary()
         summary_lbl = Gtk.Label(label=summary_text)
         summary_lbl.add_css_class("weather-summary-text")
         summary_lbl.set_wrap(True)
@@ -851,7 +869,6 @@ class WeatherOverviewView(Gtk.Box):
 
     def _get_24h_forecast_items(self) -> list[dict]:
         """Collect up to 24 forward hours starting from the current hour."""
-        is_ru = (get_current_language() == "ru")
         days_detailed = self.data.get("days_detailed", [])
         if not days_detailed:
             # Fallback to hourly array if days_detailed is absent
@@ -878,7 +895,7 @@ class WeatherOverviewView(Gtk.Box):
         # Day 0 hours from cur_h to 23
         for h in range(cur_h, min(24, len(day0_temps))):
             is_now = (h == cur_h)
-            lbl = ("Сейчас" if is_ru else "Now") if is_now else f"{h:02d}:00"
+            lbl = t("weather_now") if is_now else f"{h:02d}:00"
             t_val = day0_temps[h] if h < len(day0_temps) else 0
             p_val = day0_probs[h] if h < len(day0_probs) else 0
             icon_file = self._resolve_icon_for_hour(day0, h)
@@ -936,7 +953,7 @@ class WeatherOverviewView(Gtk.Box):
             cal_img.set_opacity(0.65)
             title_box.append(cal_img)
 
-        title_lbl = Gtk.Label(label="// Прогноз на 10 дней" if is_ru else "// 10-Day Synoptic Rail")
+        title_lbl = Gtk.Label(label=f"// {t('weather_10day_rail')}")
         title_lbl.add_css_class("weather-section-title")
         title_lbl.set_xalign(0.0)
         title_box.append(title_lbl)
@@ -998,7 +1015,7 @@ class WeatherOverviewView(Gtk.Box):
             d_str = day_info.get("date_str")
             date_num_str = ""
             if i == 0:
-                day_name = "Сегодня" if is_ru else "Today"
+                day_name = t("weather_today")
             else:
                 raw_name = day_info.get("weekday_short") or day_info.get("day") or day_info.get("day_name", "")
                 ru_weekdays = {"Пн": 0, "Вт": 1, "Ср": 2, "Чт": 3, "Пт": 4, "Сб": 5, "Вс": 6}
@@ -1009,11 +1026,11 @@ class WeatherOverviewView(Gtk.Box):
                         day_name = get_weekday_name(dt_val.weekday(), lang=cur_lang)
                         date_num_str = dt_val.strftime("%d.%m")
                     except Exception:
-                        day_name = raw_name or (f"День {i + 1}" if is_ru else f"Day {i + 1}")
-                elif raw_name in ru_weekdays and not is_ru:
+                        day_name = raw_name or t("weather_day_n", n=i + 1)
+                elif raw_name in ru_weekdays:
                     day_name = get_weekday_name(ru_weekdays[raw_name], lang=cur_lang)
                 else:
-                    day_name = raw_name or (f"День {i + 1}" if is_ru else f"Day {i + 1}")
+                    day_name = raw_name or t("weather_day_n", n=i + 1)
 
             name_lbl = Gtk.Label(label=day_name)
             name_lbl.add_css_class("weather-day-col-name")
@@ -1148,7 +1165,7 @@ class WeatherOverviewView(Gtk.Box):
         return cell
 
     def _build_bento_grid(self) -> Gtk.Widget:
-        is_ru = (get_current_language() == "ru")
+        cur_lang = get_current_language()
         grid = Gtk.Grid()
         grid.add_css_class("weather-dashboard-deck")
         grid.set_column_homogeneous(True)
@@ -1164,13 +1181,17 @@ class WeatherOverviewView(Gtk.Box):
 
         # Cell 1: Pressure
         press_mm = self.data.get("pressure_mm", 750)
-        press_desc = self.data.get("pressure_desc") or (
-            "Давление стабильное." if is_ru else "Pressure steady."
-        )
+        if press_mm < 745:
+            press_desc = t("weather_pressure_low")
+        elif press_mm > 765:
+            press_desc = t("weather_pressure_high")
+        else:
+            press_desc = t("weather_pressure_normal")
+
         cell_press = self._create_telemetry_cell(
-            title="// Барометр" if is_ru else "// Barometer",
+            title=f"// {t('weather_mode_pressure')}",
             icon_file_name="gauge.svg",
-            value_text=f"{press_mm} мм" if is_ru else f"{press_mm} mmHg",
+            value_text=f"{press_mm} {t('unit_mm')}",
             subtitle_text=press_desc,
             mode_id="pressure",
             custom_widget=MiniPressureGauge(press_mm),
@@ -1184,10 +1205,10 @@ class WeatherOverviewView(Gtk.Box):
         dew_point_val = self.data.get("dew_point", 10)
         dew_disp = convert_temp(dew_point_val, self.temp_unit)
         cell_humidity = self._create_telemetry_cell(
-            title="// Влажность" if is_ru else "// Humidity",
+            title=f"// {t('weather_mode_humidity')}",
             icon_file_name="humidity.svg",
             value_text=f"{humidity}%",
-            subtitle_text=f"Точка росы: {dew_disp}°" if is_ru else f"Dew point: {dew_disp}°",
+            subtitle_text=f"{t('weather_dew_point_label')}: {dew_disp}°",
             mode_id="humidity",
             custom_widget=MiniHumidityGauge(humidity),
         )
@@ -1197,13 +1218,19 @@ class WeatherOverviewView(Gtk.Box):
 
         # Cell 3: Visibility
         vis_km = self.data.get("visibility_km", 10.0)
-        vis_desc = self.data.get("visibility_desc") or (
-            "Ясный горизонт" if is_ru else "Clear horizon"
-        )
+        if vis_km >= 10:
+            vis_desc = t("weather_visibility_clear")
+        elif vis_km >= 5:
+            vis_desc = t("weather_vis_good")
+        elif vis_km >= 2:
+            vis_desc = t("weather_vis_scale_mod")
+        else:
+            vis_desc = t("weather_vis_fog")
+
         cell_vis = self._create_telemetry_cell(
-            title="// Видимость" if is_ru else "// Visibility",
+            title=f"// {t('weather_mode_visibility')}",
             icon_file_name="eye.svg",
-            value_text=f"{vis_km} км" if is_ru else f"{vis_km} km",
+            value_text=f"{vis_km} {t('unit_km')}",
             subtitle_text=vis_desc,
             mode_id="visibility",
         )
@@ -1213,9 +1240,19 @@ class WeatherOverviewView(Gtk.Box):
 
         # Cell 4: UV Index
         uv_idx = self.data.get("uv_index", 0)
-        uv_lvl = self.data.get("uv_level") or ("Низкий" if is_ru else "Low")
+        if uv_idx < 3:
+            uv_lvl = t("weather_uv_low")
+        elif uv_idx < 6:
+            uv_lvl = t("weather_uv_moderate")
+        elif uv_idx < 8:
+            uv_lvl = t("weather_uv_high")
+        elif uv_idx < 11:
+            uv_lvl = t("weather_uv_very_high")
+        else:
+            uv_lvl = t("weather_uv_extreme")
+
         cell_uv = self._create_telemetry_cell(
-            title="// УФ-индекс" if is_ru else "// UV Index",
+            title=f"// {t('weather_mode_uv')}",
             icon_file_name="sun-uv.svg",
             value_text=str(uv_idx),
             subtitle_text=uv_lvl,
@@ -1229,16 +1266,14 @@ class WeatherOverviewView(Gtk.Box):
         # TIER 2: Asymmetric Split 60% / 40% (Wind & Dynamics 6 cols, Thermal Comfort 4 cols)
         wind_speed = round(self.data.get("wind_speed", 0))
         wind_gusts = round(self.data.get("wind_gusts", wind_speed))
-        wind_cardinal = self.data.get("wind_cardinal", "С")
         wind_dir = self.data.get("wind_direction", 0)
-        wind_desc = self.data.get("wind_desc") or (
-            f"Порывы до {wind_gusts} км/ч • {wind_cardinal}" if is_ru else f"Gusts up to {wind_gusts} km/h • {wind_cardinal}"
-        )
+        wind_cardinal, wind_desc = get_wind_direction_info(wind_dir, lang=cur_lang)
+
         card_wind = self._create_bento_card(
-            title="// Ветровой режим" if is_ru else "// Wind Dynamics",
+            title=f"// {t('weather_mode_wind')}",
             icon_file_name="wind.svg",
-            value_text=f"{wind_speed} км/ч" if is_ru else f"{wind_speed} km/h",
-            subtitle_text=f"Азимут: {wind_cardinal} ({wind_dir}°) • Порывы до {wind_gusts} км/ч" if is_ru else f"Heading: {wind_cardinal} ({wind_dir}°) • Gusts to {wind_gusts} km/h",
+            value_text=f"{wind_speed} {t('unit_kmh')}",
+            subtitle_text=t("weather_heading_gusts", cardinal=wind_cardinal, dir=wind_dir, gusts=wind_gusts, unit=t("unit_kmh")),
             desc_text=wind_desc,
             mode_id="wind",
             custom_widget=MiniWindCompass(wind_dir),
@@ -1250,14 +1285,19 @@ class WeatherOverviewView(Gtk.Box):
         temp_disp = convert_temp(temp_val, self.temp_unit)
         feels_val = self.data.get("feels_like", temp_val)
         feels_disp = convert_temp(feels_val, self.temp_unit)
-        feels_desc = self.data.get("feels_like_desc") or (
-            "Влажность и ветер в балансе с температурой." if is_ru else "Humidity and wind balanced with temperature."
-        )
+        diff = feels_val - temp_val
+        if diff <= -2:
+            feels_desc = t("weather_feels_wind_cooler")
+        elif diff >= 2:
+            feels_desc = t("weather_feels_humidity_warmer")
+        else:
+            feels_desc = t("weather_feels_balanced")
+
         card_comfort = self._create_bento_card(
-            title="// Биокомфорт" if is_ru else "// Thermal Comfort",
+            title=f"// {t('weather_thermal_comfort')}",
             icon_file_name="thermometer.svg",
             value_text=f"{feels_disp}°",
-            subtitle_text=f"Фактически: {temp_disp}°" if is_ru else f"Actual: {temp_disp}°",
+            subtitle_text=f"{t('weather_actual_label')}: {temp_disp}°",
             desc_text=feels_desc,
             mode_id="conditions",
         )
@@ -1265,14 +1305,23 @@ class WeatherOverviewView(Gtk.Box):
 
         # TIER 3: Asymmetric Split 40% / 30% / 30% (Precipitation 4 cols, Sun 3 cols, Moon 3 cols)
         precip_sum = self.data.get("precipitation_sum", 0.0)
-        precip_desc = self.data.get("precip_desc") or (
-            "Осадков за 24 ч не ожидается." if is_ru else "No precipitation expected in 24h."
-        )
+        precip_nowcast = self.data.get("precip_nowcast")
+        if precip_sum > 5.0:
+            precip_desc = t("weather_precip_desc_heavy")
+        elif precip_sum > 1.0:
+            precip_desc = t("weather_precip_desc_moderate")
+        elif precip_sum > 0:
+            precip_desc = t("weather_precip_desc_light")
+        elif precip_nowcast and cur_lang == "ru":
+            precip_desc = precip_nowcast
+        else:
+            precip_desc = t("weather_precip_no_expected")
+
         card_precip = self._create_bento_card(
-            title="// Режим осадков" if is_ru else "// Precipitation",
+            title=f"// {t('weather_mode_precipitation')}",
             icon_file_name="rain-drop.svg",
-            value_text=f"{precip_sum} мм" if is_ru else f"{precip_sum} mm",
-            subtitle_text="За последние 24 ч" if is_ru else "Past 24 hours",
+            value_text=f"{precip_sum} {t('unit_mm')}",
+            subtitle_text=t("weather_past_24h"),
             desc_text=precip_desc,
             mode_id="precipitation",
         )
@@ -1281,26 +1330,22 @@ class WeatherOverviewView(Gtk.Box):
         sunrise = self.data.get("sunrise_str", "06:00")
         sunset = self.data.get("sunset_str", "19:00")
         is_day = bool(self.data.get("is_day", 1))
-        if is_day:
-            sun_sub = f"Закат: {sunset}" if is_ru else f"Sunset: {sunset}"
-        else:
-            sun_sub = f"Восход: {sunrise}" if is_ru else f"Sunrise: {sunrise}"
+        sun_sub = t("weather_sunset_time", time=sunset) if is_day else t("weather_sunrise_time", time=sunrise)
 
         card_sun = self._create_bento_card(
-            title="// Солнечный цикл" if is_ru else "// Solar Cycle",
+            title=f"// {t('weather_solar_cycle')}",
             icon_file_name="sunset.svg" if is_day else "sunrise.svg",
             value_text=sunset if is_day else sunrise,
             subtitle_text=sun_sub,
-            desc_text="Световой день продолжается." if is_ru else "Daylight in progress.",
+            desc_text=t("weather_daylight_progress"),
             mode_id="sun",
             custom_widget=MiniSunCurve(sunrise, sunset, is_day),
         )
         grid.attach(card_sun, 4, 2, 3, 1)
 
         moon_data = self.data.get("moon_phase") or {}
-        moon_name = moon_data.get("name_ru" if is_ru else "name_en") or (
-            "Растущая Луна" if is_ru else "Waxing Moon"
-        )
+        m_calc = calculate_moon_phase(lang=cur_lang)
+        moon_name = m_calc.get("name") or moon_data.get(f"name_{cur_lang}") or moon_data.get("name_en") or t("weather_moon_waxing")
         moon_illum = round(moon_data.get("illumination", 50))
         cycle_frac = moon_data.get("cycle_fraction", 0.5)
 
@@ -1308,36 +1353,57 @@ class WeatherOverviewView(Gtk.Box):
         moon_widget.set_size_request(24, 24)
 
         card_moon = self._create_bento_card(
-            title="// Фаза Луны" if is_ru else "// Lunar Ephemeris",
+            title=f"// {t('weather_lunar_ephemeris')}",
             icon_file_name="moon.svg",
             value_text=moon_name,
-            subtitle_text=f"Освещенность: {moon_illum}%" if is_ru else f"Illumination: {moon_illum}%",
-            desc_text="Синодический цикл." if is_ru else "Synodic cycle.",
+            subtitle_text=f"{t('weather_moon_illumination')}: {moon_illum}%",
+            desc_text=t("weather_synodic_cycle"),
             mode_id="moon",
             custom_widget=moon_widget,
         )
         grid.attach(card_moon, 7, 2, 3, 1)
 
         # TIER 4: Full-Width Climatological Baseline Strip (spans 10 columns)
-        avg_diff = self.data.get("avg_diff_str")
         clim_avg = self.data.get("climate_averages") or {}
-        if not avg_diff or avg_diff in ("0° к норме", "0° vs norm"):
-            diff_short = clim_avg.get("temp_diff_str_short")
-            if diff_short:
-                avg_diff = f"{diff_short} к норме" if is_ru else f"{diff_short} vs norm"
-            elif clim_avg.get("temp_diff_str"):
-                avg_diff = f"{clim_avg.get('temp_diff_str')}"
-            else:
-                avg_diff = "0° к норме" if is_ru else "0° vs norm"
+        diff_val = clim_avg.get("temp_diff_str_short")
+        if not diff_val:
+            td = clim_avg.get("temp_diff", 0)
+            diff_val = f"+{td}°" if td > 0 else (f"{td}°" if td < 0 else "0°")
+        if not diff_val.endswith("°"):
+            diff_val = f"{diff_val}°"
+        avg_diff = t("weather_climate_vs_norm", diff=diff_val)
 
-        avg_desc = self.data.get("avg_desc") or clim_avg.get("summary_temp") or (
-            "Температура около многолетней климатической нормы." if is_ru else "Temperature close to long-term climate average."
+        p10 = clim_avg.get("temp_normal_p10", 0)
+        p90 = clim_avg.get("temp_normal_p90", 15)
+        avg_max = clim_avg.get("temp_avg_max", 10)
+        t_max = clim_avg.get("temp_today_max", round(self.data.get("temp_max", 10)))
+        temp_diff = clim_avg.get("temp_diff", round(t_max - avg_max))
+
+        today = datetime.now().date()
+        today_formatted = format_day_month(today.day, today.month, lang=cur_lang)
+
+        if temp_diff > 0:
+            temp_comp_word = t("weather_climate_temp_above", diff=temp_diff)
+        elif temp_diff < 0:
+            temp_comp_word = t("weather_climate_temp_below", diff=abs(temp_diff))
+        else:
+            temp_comp_word = t("weather_climate_temp_exact")
+
+        avg_desc = t(
+            "weather_climate_summary_temp",
+            date=today_formatted,
+            p10=p10,
+            p90=p90,
+            avg_max=avg_max,
+            t_max=t_max,
+            comparison=temp_comp_word,
         )
+
         card_avg = self._create_climate_norm_bar(
-            title="// Климатическая норма" if is_ru else "// Climate Baseline",
+            title=t("weather_climate_baseline_title"),
             icon_file_name="chart-norm.svg",
             value_text=avg_diff,
-            subtitle_text="Многолетний базис" if is_ru else "Monthly baseline",
+            subtitle_text=t("weather_climate_monthly_baseline"),
             desc_text=avg_desc,
             mode_id="averages",
             custom_widget=MiniClimateNormGauge(avg_diff),

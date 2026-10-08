@@ -312,7 +312,7 @@ class WeatherSplineArea(Gtk.DrawingArea):
             cr.stroke()
 
             cr.set_source_rgba(1, 1, 1, 0.45)
-            cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(10)
             cr.move_to(pad_l + plot_w + 7, y + 3.5)
             cr.show_text(f"{v}°")
@@ -450,7 +450,7 @@ class WeatherSplineArea(Gtk.DrawingArea):
             cr.fill()
 
         def draw_extreme_pill(x, y, text, is_top):
-            cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
             cr.set_font_size(10.5)
             ext = cr.text_extents(text)
             p_w = ext.width + 12
@@ -545,7 +545,7 @@ class PrecipitationBarArea(Gtk.DrawingArea):
             cr.stroke()
 
             cr.set_source_rgba(1, 1, 1, 0.40)
-            cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(9)
             cr.move_to(pad_l + plot_w + 6, y + 3)
             cr.show_text(f"{pct}%")
@@ -683,7 +683,7 @@ def build_conditions_view(sheet):
     sheet.lbl_v1_desc = Gtk.Label(label=t("weather_card_expected_daily"))
     sheet.lbl_v1_desc.add_css_class("weather-body-text")
     row_v1.append(sheet.lbl_v1_desc)
-    p_unit = "мм" if is_ru or lang in ("uk", "kk") else "mm"
+    p_unit = t("unit_mm")
     sheet.lbl_v1_val = Gtk.Label(label=f"0 {p_unit}")
     sheet.lbl_v1_val.add_css_class("weather-item-bold")
     sheet.lbl_v1_val.set_hexpand(True)

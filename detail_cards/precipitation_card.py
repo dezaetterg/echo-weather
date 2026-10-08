@@ -14,7 +14,7 @@ from gi.repository import Gtk
 
 from detail_cards.base import BaseWeatherHourlyArea
 from detail_cards.comparison_bar import DayComparisonBarArea
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class PrecipitationHourlyArea(BaseWeatherHourlyArea):
@@ -121,7 +121,7 @@ class PrecipitationHourlyArea(BaseWeatherHourlyArea):
             cr.stroke()
 
             cr.set_source_rgba(1, 1, 1, 0.40)
-            cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(9)
             cr.move_to(pad_l + plot_w + 6, y + 3)
             cr.show_text(f"{pct}%")
@@ -258,9 +258,7 @@ def build_precipitation_view(sheet) -> Gtk.Box:
     precip_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     precip_card.add_css_class("weather-glass-card")
 
-    lbl_pr_title = Gtk.Label(
-        label="ПОЧАСОВОЙ ОБЪЕМ И ВЕРОЯТНОСТЬ ОСАДКОВ" if is_ru else "HOURLY PRECIPITATION & CHANCE"
-    )
+    lbl_pr_title = Gtk.Label(label=t("weather_precip_hourly_hdr"))
     lbl_pr_title.add_css_class("weather-section-title")
     lbl_pr_title.set_halign(Gtk.Align.START)
     precip_card.append(lbl_pr_title)
@@ -296,7 +294,7 @@ def build_precipitation_view(sheet) -> Gtk.Box:
     vol_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     vol_card.add_css_class("weather-glass-card")
 
-    lbl_v_title = Gtk.Label(label="СУТОЧНЫЕ ОСАДКИ" if is_ru else "DAILY PRECIPITATION")
+    lbl_v_title = Gtk.Label(label=t("weather_precip_daily_hdr"))
     lbl_v_title.add_css_class("weather-section-title")
     lbl_v_title.set_halign(Gtk.Align.START)
     vol_card.append(lbl_v_title)
@@ -306,10 +304,10 @@ def build_precipitation_view(sheet) -> Gtk.Box:
     vol_card.append(div_v)
 
     row_p1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_p1 = Gtk.Label(label="Суммарный объем" if is_ru else "Total expected volume")
+    lbl_p1 = Gtk.Label(label=t("weather_precip_total_vol"))
     lbl_p1.add_css_class("weather-body-text")
     row_p1.append(lbl_p1)
-    sheet.lbl_pr_day_vol = Gtk.Label(label="0.0 мм")
+    sheet.lbl_pr_day_vol = Gtk.Label(label=f"0.0 {t('unit_mm')}")
     sheet.lbl_pr_day_vol.add_css_class("weather-item-bold")
     sheet.lbl_pr_day_vol.set_hexpand(True)
     sheet.lbl_pr_day_vol.set_halign(Gtk.Align.END)
@@ -317,7 +315,7 @@ def build_precipitation_view(sheet) -> Gtk.Box:
     vol_card.append(row_p1)
 
     row_p2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_p2 = Gtk.Label(label="Максимальная вероятность" if is_ru else "Peak probability")
+    lbl_p2 = Gtk.Label(label=t("weather_precip_peak_prob"))
     lbl_p2.add_css_class("weather-body-text")
     row_p2.append(lbl_p2)
     sheet.lbl_pr_day_prob = Gtk.Label(label="0%")
@@ -333,7 +331,7 @@ def build_precipitation_view(sheet) -> Gtk.Box:
     sheet.precip_comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sheet.precip_comp_card.add_css_class("weather-glass-card")
 
-    lbl_pr_comp_title = Gtk.Label(label="СРАВНЕНИЕ ПО ДНЯМ" if is_ru else "DAY COMPARISON")
+    lbl_pr_comp_title = Gtk.Label(label=t("weather_comp_days_hdr"))
     lbl_pr_comp_title.add_css_class("weather-section-title")
     lbl_pr_comp_title.set_halign(Gtk.Align.START)
     sheet.precip_comp_card.append(lbl_pr_comp_title)
@@ -356,7 +354,7 @@ def build_precipitation_view(sheet) -> Gtk.Box:
     # 4. Atmospheric Moisture Card
     info_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     info_card.add_css_class("weather-glass-card")
-    lbl_i_title = Gtk.Label(label="О ВЫПАДЕНИИ ОСАДКОВ" if is_ru else "PRECIPITATION DYNAMICS")
+    lbl_i_title = Gtk.Label(label=t("weather_precip_dynamics_hdr"))
     lbl_i_title.add_css_class("weather-section-title")
     lbl_i_title.set_halign(Gtk.Align.START)
     info_card.append(lbl_i_title)

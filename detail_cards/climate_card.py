@@ -13,7 +13,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import GLib, Gtk
 
-from i18n import get_current_language
+from i18n import get_current_language, get_month_name, t
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,9 @@ class ClimateMonthlyTempTable(Gtk.Box):
             if is_cur:
                 row.add_css_class("climate-month-row-active")
 
-            lbl_name = Gtk.Label(label=m["name"])
+            m_num = m.get("month", idx + 1)
+            name_str = get_month_name(m_num, short=True) or m.get("name", "")
+            lbl_name = Gtk.Label(label=name_str)
             lbl_name.add_css_class("climate-month-name")
             if is_cur:
                 lbl_name.add_css_class("climate-month-name-active")
@@ -243,6 +245,7 @@ class ClimateMonthlyPrecipTable(Gtk.Box):
 
         all_precips = [m["precip_mm"] for m in monthly_list]
         max_p = max(all_precips) if all_precips else 100.0
+        unit_precip = t("weather_climate_precip_unit")
 
         for idx, m in enumerate(monthly_list):
             row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -251,7 +254,9 @@ class ClimateMonthlyPrecipTable(Gtk.Box):
             if is_cur:
                 row.add_css_class("climate-month-row-active")
 
-            lbl_name = Gtk.Label(label=m["name"])
+            m_num = m.get("month", idx + 1)
+            name_str = get_month_name(m_num, short=True) or m.get("name", "")
+            lbl_name = Gtk.Label(label=name_str)
             lbl_name.add_css_class("climate-month-name")
             if is_cur:
                 lbl_name.add_css_class("climate-month-name-active")
@@ -262,8 +267,7 @@ class ClimateMonthlyPrecipTable(Gtk.Box):
             bar = PrecipCapsuleBarArea(m["precip_mm"], max_p)
             row.append(bar)
 
-            is_ru = (get_current_language() == "ru")
-            lbl_val = Gtk.Label(label=f"{m['precip_mm']} мм" if is_ru else f"{m['precip_mm']} mm")
+            lbl_val = Gtk.Label(label=f"{m['precip_mm']} {unit_precip}")
             lbl_val.add_css_class("climate-precip-val")
             if is_cur:
                 lbl_val.add_css_class("climate-precip-val-active")
@@ -384,7 +388,7 @@ class ClimateTempChartArea(Gtk.DrawingArea):
             y = pad_t + plot_h - ratio * plot_h
             return x, y
 
-        cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9.5)
 
         step = 3.0 if (y_max - y_min) <= 24.0 else (6.0 if (y_max - y_min) <= 45.0 else 10.0)
@@ -493,8 +497,7 @@ class ClimateTempChartArea(Gtk.DrawingArea):
             sub_title = f"{scrub_h:02d}:00"
             main_title = f"{int(round(t_val))}°"
         else:
-            is_ru = (get_current_language() == "ru")
-            sub_title = "Макс. сегодня" if is_ru else "Today's Max"
+            sub_title = t("weather_climate_todays_max")
             main_title = f"{int(round(self.today_max))}°"
 
         cr.set_source_rgba(1, 1, 1, 0.70)
@@ -503,7 +506,7 @@ class ClimateTempChartArea(Gtk.DrawingArea):
         cr.show_text(sub_title)
 
         cr.set_source_rgba(1, 1, 1, 0.98)
-        cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(24.0)
         cr.move_to(pad_l + 2, pad_t - 4)
         cr.show_text(main_title)
@@ -533,7 +536,7 @@ class ClimateTempChartArea(Gtk.DrawingArea):
 
         cr.save()
         leg_y = height - 8
-        cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(10.5)
 
         cr.arc(pad_l + 6, leg_y - 3.5, 4.5, 0, 2 * math.pi)
@@ -542,7 +545,7 @@ class ClimateTempChartArea(Gtk.DrawingArea):
 
         cr.set_source_rgba(1, 1, 1, 0.85)
         cr.move_to(pad_l + 16, leg_y)
-        cr.show_text("Сегодня")
+        cr.show_text(t("weather_climate_legend_today"))
 
         leg_x2 = pad_l + 100.0
         cr.arc(leg_x2 + 6, leg_y - 3.5, 4.5, 0, 2 * math.pi)
@@ -551,7 +554,8 @@ class ClimateTempChartArea(Gtk.DrawingArea):
 
         cr.set_source_rgba(1, 1, 1, 0.85)
         cr.move_to(leg_x2 + 16, leg_y)
-        cr.show_text(f"Норма (от {int(round(self.normal_p10))}° до {int(round(self.normal_p90))}°)")
+        norm_legend = t("weather_climate_norm_range", p10=int(round(self.normal_p10)), p90=int(round(self.normal_p90)))
+        cr.show_text(norm_legend)
         cr.restore()
 
 
@@ -622,8 +626,12 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
         d_idx = int(round(day_frac))
         d_idx = max(0, min(len(self.precip_series) - 1, d_idx))
         cum_val = self.precip_series[d_idx]
-        is_ru = (get_current_language() == "ru")
-        d_str = self.dates_30d[d_idx] if d_idx < len(self.dates_30d) else (f"{30 - d_idx} дн назад" if is_ru else f"{30 - d_idx}d ago")
+        if d_idx < len(self.dates_30d):
+            d_str = self.dates_30d[d_idx]
+        elif d_idx == len(self.precip_series) - 1:
+            d_str = t("weather_today")
+        else:
+            d_str = t("weather_climate_30d_ago")
         if callable(self.on_scrub):
             self.on_scrub(d_idx, d_str, cum_val)
 
@@ -655,9 +663,10 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
             y = pad_t + plot_h - ratio * plot_h
             return x, y
 
-        cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9.5)
 
+        unit_precip = t("weather_climate_precip_unit")
         step = 25.0 if y_max <= 150.0 else 50.0
         curr_y = 0.0
         while curr_y <= y_max + 0.1:
@@ -670,18 +679,17 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
                 cr.stroke()
 
                 cr.set_source_rgba(1, 1, 1, 0.45)
-                lbl_txt = f"{int(round(curr_y))} мм" if curr_y == 0 else f"{int(round(curr_y))}"
+                lbl_txt = f"{int(round(curr_y))} {unit_precip}" if curr_y == 0 else f"{int(round(curr_y))}"
                 cr.move_to(pad_l + plot_w + 6, gy + 3.5)
                 cr.show_text(lbl_txt)
             curr_y += step
 
-        is_ru = (get_current_language() == "ru")
         cr.set_source_rgba(1, 1, 1, 0.55)
         cr.set_font_size(10.0)
         cr.move_to(pad_l, height - 26)
-        cr.show_text("30 дн назад" if is_ru else "30d ago")
+        cr.show_text(t("weather_climate_30d_ago"))
 
-        today_lbl = "Сегодня" if is_ru else "Today"
+        today_lbl = t("weather_today")
         ext_today = cr.text_extents(today_lbl)
         cr.move_to(pad_l + plot_w - ext_today.width, height - 26)
         cr.show_text(today_lbl)
@@ -732,8 +740,13 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
             scrub_d = int(round(self.scrub_day_frac))
             scrub_d = max(0, min(len(self.precip_series) - 1, scrub_d))
             cum_val = self.precip_series[scrub_d]
-            sub_title = self.dates_30d[scrub_d] if scrub_d < len(self.dates_30d) else (f"{30 - scrub_d} дн назад" if is_ru else f"{30 - scrub_d}d ago")
-            main_title = f"{cum_val:.1f} мм" if is_ru else f"{cum_val:.1f} mm"
+            if scrub_d < len(self.dates_30d):
+                sub_title = self.dates_30d[scrub_d]
+            elif scrub_d == len(self.precip_series) - 1:
+                sub_title = t("weather_today")
+            else:
+                sub_title = t("weather_climate_30d_ago")
+            main_title = f"{cum_val:.1f} {unit_precip}"
 
             cr.set_source_rgba(1, 1, 1, 0.70)
             cr.set_font_size(11.0)
@@ -741,23 +754,22 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
             cr.show_text(sub_title)
 
             cr.set_source_rgba(1, 1, 1, 0.98)
-            cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
             cr.set_font_size(24.0)
             cr.move_to(pad_l + 2, pad_t - 4)
             cr.show_text(main_title)
         else:
             cr.set_source_rgba(1, 1, 1, 0.65)
-            cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
             cr.set_font_size(20.0)
             cr.move_to(pad_l + 2, pad_t - 10)
-            mm_u = "мм" if is_ru else "mm"
-            cr.show_text(f"{int(round(self.avg_30d_total))} {mm_u}")
+            cr.show_text(f"{int(round(self.avg_30d_total))} {unit_precip}")
 
             cr.set_source_rgba(1, 1, 1, 0.98)
             cr.set_font_size(26.0)
-            ext_r = cr.text_extents(f"{int(round(self.actual_30d_total))} {mm_u}")
+            ext_r = cr.text_extents(f"{int(round(self.actual_30d_total))} {unit_precip}")
             cr.move_to(pad_l + plot_w - ext_r.width - 20, pad_t - 10)
-            cr.show_text(f"{int(round(self.actual_30d_total))} {mm_u}")
+            cr.show_text(f"{int(round(self.actual_30d_total))} {unit_precip}")
         cr.restore()
 
         if self.is_scrubbing and self.scrub_day_frac is not None:
@@ -784,7 +796,7 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
 
         cr.save()
         leg_y = height - 8
-        cr.select_font_face("Inter, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(10.5)
 
         cr.arc(pad_l + 6, leg_y - 3.5, 4.5, 0, 2 * math.pi)
@@ -793,7 +805,7 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
 
         cr.set_source_rgba(1, 1, 1, 0.85)
         cr.move_to(pad_l + 16, leg_y)
-        cr.show_text("Последние 30 дней")
+        cr.show_text(t("weather_climate_last_30_days"))
 
         leg_x2 = pad_l + 140.0
         cr.arc(leg_x2 + 6, leg_y - 3.5, 4.5, 0, 2 * math.pi)
@@ -802,13 +814,12 @@ class ClimatePrecipChartArea(Gtk.DrawingArea):
 
         cr.set_source_rgba(1, 1, 1, 0.85)
         cr.move_to(leg_x2 + 16, leg_y)
-        cr.show_text("Среднее значение")
+        cr.show_text(t("weather_climate_average_val"))
         cr.restore()
 
 
 def build_averages_view(sheet):
     """Построение карточки климатических норм и подключение к WeatherDetailSheet."""
-    is_ru = (get_current_language() == "ru")
     sheet.current_averages_subtab = "temp"
 
     sheet.averages_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
@@ -820,13 +831,13 @@ def build_averages_view(sheet):
     seg_box.set_halign(Gtk.Align.CENTER)
     seg_box.set_margin_bottom(2)
 
-    sheet.btn_avg_temp = Gtk.Button(label="Температура" if is_ru else "Temperature")
+    sheet.btn_avg_temp = Gtk.Button(label=t("weather_climate_tab_temp"))
     sheet.btn_avg_temp.add_css_class("segmented-btn")
     sheet.btn_avg_temp.add_css_class("segmented-btn-active")
     sheet.btn_avg_temp.connect("clicked", lambda _: sheet._set_averages_subtab("temp"))
     seg_box.append(sheet.btn_avg_temp)
 
-    sheet.btn_avg_precip = Gtk.Button(label="Осадки" if is_ru else "Precipitation")
+    sheet.btn_avg_precip = Gtk.Button(label=t("weather_climate_tab_precip"))
     sheet.btn_avg_precip.add_css_class("segmented-btn")
     sheet.btn_avg_precip.connect("clicked", lambda _: sheet._set_averages_subtab("precip"))
     seg_box.append(sheet.btn_avg_precip)
@@ -843,16 +854,19 @@ def build_averages_view(sheet):
     # Подвкладка: Температура
     sheet.avg_temp_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
 
+    avg_label = t("weather_climate_average_label")
+    unit_precip = t("weather_climate_precip_unit")
+
     hero_temp_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
     hero_temp_box.add_css_class("weather-averages-hero-box")
-    sheet.lbl_avg_temp_hero = Gtk.Label(label="+0° > среднего" if is_ru else "+0° > average")
+    sheet.lbl_avg_temp_hero = Gtk.Label(label=f"+0° > {avg_label}")
     sheet.lbl_avg_temp_hero.add_css_class("weather-averages-hero-title")
     sheet.lbl_avg_temp_hero.set_xalign(0.0)
     hero_temp_box.append(sheet.lbl_avg_temp_hero)
 
     placeholder_temp = "\u2014"
     sheet.lbl_avg_temp_sub = Gtk.Label(
-        label=f"Средн. макс: {placeholder_temp}°" if is_ru else f"Avg high: {placeholder_temp}°"
+        label=t("weather_climate_avg_high", val=placeholder_temp)
     )
     sheet.lbl_avg_temp_sub.add_css_class("weather-averages-hero-sub")
     sheet.lbl_avg_temp_sub.set_xalign(0.0)
@@ -867,7 +881,7 @@ def build_averages_view(sheet):
 
     sum_temp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sum_temp_card.add_css_class("weather-glass-card")
-    lbl_sum_t_hdr = Gtk.Label(label="Сводка" if is_ru else "Summary")
+    lbl_sum_t_hdr = Gtk.Label(label=t("weather_climate_btn_overview"))
     lbl_sum_t_hdr.add_css_class("weather-section-title")
     lbl_sum_t_hdr.set_xalign(0.0)
     sum_temp_card.append(lbl_sum_t_hdr)
@@ -881,7 +895,7 @@ def build_averages_view(sheet):
 
     month_temp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     month_temp_card.add_css_class("weather-glass-card")
-    lbl_m_t_hdr = Gtk.Label(label="Среднее за месяц" if is_ru else "Monthly Averages")
+    lbl_m_t_hdr = Gtk.Label(label=t("weather_climate_btn_history"))
     lbl_m_t_hdr.add_css_class("weather-section-title")
     lbl_m_t_hdr.set_xalign(0.0)
     month_temp_card.append(lbl_m_t_hdr)
@@ -902,27 +916,12 @@ def build_averages_view(sheet):
 
     edu_norm_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     edu_norm_card.add_css_class("weather-glass-card")
-    lbl_edu_n_hdr = Gtk.Label(label="О норме" if is_ru else "About the Norm")
+    lbl_edu_n_hdr = Gtk.Label(label=t("weather_climate_edu_norm_title"))
     lbl_edu_n_hdr.add_css_class("weather-section-title")
     lbl_edu_n_hdr.set_xalign(0.0)
     edu_norm_card.append(lbl_edu_n_hdr)
 
-    lbl_edu_n_text = Gtk.Label(
-        label=(
-            "Диапазон климатической нормы охватывает типичные погодные условия для текущего дня года на основе "
-            "многолетних метеорологических наблюдений (30-летний базовый цикл Всемирной метеорологической организации). "
-            "В этот доверительный интервал укладывается около 80% всех исторических показаний температуры.\n\n"
-            "Если фактическая кривая выходит за пределы полосы нормы, это свидетельствует о выраженной аномалии: "
-            "значение выше верхней границы попадает в 10% самых жарких дней за историю наблюдений в это время года, "
-            "а значение ниже нижней границы \u2014 в 10% самых холодных дней."
-        ) if is_ru else (
-            "The climate normal range represents the typical temperature envelope for this calendar day based on "
-            "long-term meteorological observation series (standard 30-year WMO climate normal). Roughly 80% of historical "
-            "temperature readings fall within this band.\n\n"
-            "Readings extending above this corridor indicate unseasonably warm conditions (top 10% warmest days), "
-            "while dips below indicate rare cold snaps (bottom 10% coldest days)."
-        )
-    )
+    lbl_edu_n_text = Gtk.Label(label=t("weather_climate_edu_norm_desc"))
     lbl_edu_n_text.add_css_class("weather-body-text")
     lbl_edu_n_text.set_wrap(True)
     lbl_edu_n_text.set_xalign(0.0)
@@ -931,25 +930,12 @@ def build_averages_view(sheet):
 
     edu_temp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     edu_temp_card.add_css_class("weather-glass-card")
-    lbl_edu_t_hdr = Gtk.Label(label="О средней температуре" if is_ru else "About Average Temperature")
+    lbl_edu_t_hdr = Gtk.Label(label=t("weather_climate_edu_temp_title"))
     lbl_edu_t_hdr.add_css_class("weather-section-title")
     lbl_edu_t_hdr.set_xalign(0.0)
     edu_temp_card.append(lbl_edu_t_hdr)
 
-    lbl_edu_t_text = Gtk.Label(
-        label=(
-            "Средний максимум и минимум определяют математическое ожидание экстремальных температур для конкретной "
-            "календарной даты, рассчитанное по долгосрочным рядам климатических наблюдений.\n\n"
-            "Среднемесячные показатели отражают среднее арифметическое суточных максимумов и минимумов за весь "
-            "календарный месяц. Это позволяет наглядно сопоставить текущую погоду с устоявшимся региональным "
-            "климатическим трендом."
-        ) if is_ru else (
-            "Daily average highs and lows represent the statistical expectation of peak daily extremes for a specific date, "
-            "derived from multi-decade meteorological reanalysis.\n\n"
-            "Monthly climate normals synthesize diurnal highs and lows over the full month, providing a reliable baseline "
-            "to gauge seasonal progression."
-        )
-    )
+    lbl_edu_t_text = Gtk.Label(label=t("weather_climate_edu_temp_desc"))
     lbl_edu_t_text.add_css_class("weather-body-text")
     lbl_edu_t_text.set_wrap(True)
     lbl_edu_t_text.set_xalign(0.0)
@@ -963,14 +949,14 @@ def build_averages_view(sheet):
 
     hero_pr_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
     hero_pr_box.add_css_class("weather-averages-hero-box")
-    sheet.lbl_avg_precip_hero = Gtk.Label(label="+0 мм > среднего" if is_ru else "+0 mm > average")
+    sheet.lbl_avg_precip_hero = Gtk.Label(label=f"+0 {unit_precip} > {avg_label}")
     sheet.lbl_avg_precip_hero.add_css_class("weather-averages-hero-title")
     sheet.lbl_avg_precip_hero.set_xalign(0.0)
     hero_pr_box.append(sheet.lbl_avg_precip_hero)
 
     placeholder_mm = "\u2014"
     sheet.lbl_avg_precip_sub = Gtk.Label(
-        label=f"Средн. за 30 дней: {placeholder_mm} мм" if is_ru else f"30-day avg: {placeholder_mm} mm"
+        label=t("weather_climate_precip_avg_30d", val=placeholder_mm, unit=unit_precip)
     )
     sheet.lbl_avg_precip_sub.add_css_class("weather-averages-hero-sub")
     sheet.lbl_avg_precip_sub.set_xalign(0.0)
@@ -985,7 +971,7 @@ def build_averages_view(sheet):
 
     sum_pr_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sum_pr_card.add_css_class("weather-glass-card")
-    lbl_sum_p_hdr = Gtk.Label(label="Сводка" if is_ru else "Summary")
+    lbl_sum_p_hdr = Gtk.Label(label=t("weather_climate_btn_overview"))
     lbl_sum_p_hdr.add_css_class("weather-section-title")
     lbl_sum_p_hdr.set_xalign(0.0)
     sum_pr_card.append(lbl_sum_p_hdr)
@@ -999,7 +985,7 @@ def build_averages_view(sheet):
 
     month_pr_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     month_pr_card.add_css_class("weather-glass-card")
-    lbl_m_p_hdr = Gtk.Label(label="Среднее за месяц" if is_ru else "Monthly Averages")
+    lbl_m_p_hdr = Gtk.Label(label=t("weather_climate_btn_history"))
     lbl_m_p_hdr.add_css_class("weather-section-title")
     lbl_m_p_hdr.set_xalign(0.0)
     month_pr_card.append(lbl_m_p_hdr)
@@ -1020,25 +1006,12 @@ def build_averages_view(sheet):
 
     edu_pr_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     edu_pr_card.add_css_class("weather-glass-card")
-    lbl_edu_p_hdr = Gtk.Label(label="О среднем объеме осадков" if is_ru else "About Precipitation Averages")
+    lbl_edu_p_hdr = Gtk.Label(label=t("weather_climate_edu_precip_title"))
     lbl_edu_p_hdr.add_css_class("weather-section-title")
     lbl_edu_p_hdr.set_xalign(0.0)
     edu_pr_card.append(lbl_edu_p_hdr)
 
-    lbl_edu_p_text = Gtk.Label(
-        label=(
-            "Климатическая норма осадков представляет собой совокупное среднемноголетнее количество влаги "
-            "(в миллиметрах водяного столба), выпадающее в регионе за определенный календарный месяц.\n\n"
-            "Накопительный 30-дневный график наглядно отражает ритм поступления влаги: пологие участки соответствуют "
-            "периодам сухой и ясной погоды, а крутые ступени вверх отражают прохождение дождевых фронтов и обильные "
-            "осадки по сравнению с равномерным многолетним климатическим темпом."
-        ) if is_ru else (
-            "Precipitation normals represent the expected cumulative volume of atmospheric moisture (in millimeters) "
-            "falling within a given calendar month over a multi-decade baseline.\n\n"
-            "The 30-day cumulative chart illustrates precipitation accumulation dynamics: flat steps indicate dry spells, "
-            "while steep rises mark intense rain events and frontal passages against the steady climatological pace."
-        )
-    )
+    lbl_edu_p_text = Gtk.Label(label=t("weather_climate_edu_precip_desc"))
     lbl_edu_p_text.add_css_class("weather-body-text")
     lbl_edu_p_text.set_wrap(True)
     lbl_edu_p_text.set_xalign(0.0)

@@ -14,7 +14,7 @@ from gi.repository import Gtk
 
 from detail_cards.base import BaseWeatherHourlyArea
 from detail_cards.comparison_bar import DayComparisonBarArea
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class UVHourlyArea(BaseWeatherHourlyArea):
@@ -134,7 +134,7 @@ class UVHourlyArea(BaseWeatherHourlyArea):
 
         # 1.5. Числовые значения УФ сверху
         cr.set_source_rgba(1, 1, 1, 0.45)
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9.5)
         for gh in (0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22):
             if gh < len(self.uvs):
@@ -156,7 +156,7 @@ class UVHourlyArea(BaseWeatherHourlyArea):
                 cr.stroke()
 
                 cr.set_source_rgba(1, 1, 1, 0.42)
-                cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
                 cr.set_font_size(9.5)
                 cr.move_to(pad_l + plot_w + 6, y + 3.5)
                 cr.show_text(str(val))
@@ -224,9 +224,8 @@ class UVHourlyArea(BaseWeatherHourlyArea):
             cr.set_source_rgba(1, 1, 1, 1)
             cr.fill()
 
-            is_ru = (get_current_language() == "ru")
-            badge_txt = f"Пик {peak_val:.1f}" if is_ru else f"Peak {peak_val:.1f}"
-            cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+            badge_txt = t("weather_uv_peak_prefix", val=peak_val)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
             cr.set_font_size(10.5)
             ext = cr.text_extents(badge_txt)
             bw = ext.width + 12
@@ -302,7 +301,6 @@ class UVHourlyArea(BaseWeatherHourlyArea):
 
 def build_uv_view(sheet) -> Gtk.Box:
     """Конструирует контейнер карточки УФ-индекса и связывает его с объектом листа деталей."""
-    is_ru = (get_current_language() == "ru")
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
     box.set_valign(Gtk.Align.START)
 
@@ -310,7 +308,7 @@ def build_uv_view(sheet) -> Gtk.Box:
     uv_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     uv_card.add_css_class("weather-glass-card")
 
-    lbl_uv_hdr = Gtk.Label(label="ГРАФИК УФ-ИНДЕКСА ПО ЧАСАМ" if is_ru else "HOURLY UV INDEX GRAPH")
+    lbl_uv_hdr = Gtk.Label(label=t("weather_uv_hourly_hdr"))
     lbl_uv_hdr.add_css_class("weather-section-title")
     lbl_uv_hdr.set_halign(Gtk.Align.START)
     uv_card.append(lbl_uv_hdr)
@@ -346,7 +344,7 @@ def build_uv_view(sheet) -> Gtk.Box:
     lvl_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     lvl_card.add_css_class("weather-glass-card")
 
-    lbl_lvl_title = Gtk.Label(label="УРОВЕНЬ ИЗЛУЧЕНИЯ" if is_ru else "RADIATION LEVEL")
+    lbl_lvl_title = Gtk.Label(label=t("weather_uv_radiation_hdr"))
     lbl_lvl_title.add_css_class("weather-section-title")
     lbl_lvl_title.set_halign(Gtk.Align.START)
     lvl_card.append(lbl_lvl_title)
@@ -356,7 +354,7 @@ def build_uv_view(sheet) -> Gtk.Box:
     lvl_card.append(div_l)
 
     row_u1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_u1 = Gtk.Label(label="Максимальный индекс сегодня" if is_ru else "Peak index today")
+    lbl_u1 = Gtk.Label(label=t("weather_uv_peak_today"))
     lbl_u1.add_css_class("weather-body-text")
     row_u1.append(lbl_u1)
     sheet.lbl_uv_val = Gtk.Label(label="0.0")
@@ -367,10 +365,10 @@ def build_uv_view(sheet) -> Gtk.Box:
     lvl_card.append(row_u1)
 
     row_u2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_u2 = Gtk.Label(label="Уровень опасности" if is_ru else "Hazard level")
+    lbl_u2 = Gtk.Label(label=t("weather_uv_hazard_level"))
     lbl_u2.add_css_class("weather-body-text")
     row_u2.append(lbl_u2)
-    sheet.lbl_uv_level = Gtk.Label(label="Низкий" if is_ru else "Low")
+    sheet.lbl_uv_level = Gtk.Label(label=t("weather_uv_low"))
     sheet.lbl_uv_level.add_css_class("weather-item-bold")
     sheet.lbl_uv_level.set_hexpand(True)
     sheet.lbl_uv_level.set_halign(Gtk.Align.END)
@@ -383,7 +381,7 @@ def build_uv_view(sheet) -> Gtk.Box:
     sheet.uv_comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sheet.uv_comp_card.add_css_class("weather-glass-card")
 
-    lbl_uv_comp_title = Gtk.Label(label="СРАВНЕНИЕ ПО ДНЯМ" if is_ru else "DAY COMPARISON")
+    lbl_uv_comp_title = Gtk.Label(label=t("weather_comp_days_hdr"))
     lbl_uv_comp_title.add_css_class("weather-section-title")
     lbl_uv_comp_title.set_halign(Gtk.Align.START)
     sheet.uv_comp_card.append(lbl_uv_comp_title)
@@ -407,7 +405,7 @@ def build_uv_view(sheet) -> Gtk.Box:
     adv_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     adv_card.add_css_class("weather-glass-card")
 
-    lbl_adv_title = Gtk.Label(label="РЕКОМЕНДАЦИИ ПО ЗАЩИТЕ" if is_ru else "SUN PROTECTION ADVICE")
+    lbl_adv_title = Gtk.Label(label=t("weather_uv_adv_title"))
     lbl_adv_title.add_css_class("weather-section-title")
     lbl_adv_title.set_halign(Gtk.Align.START)
     adv_card.append(lbl_adv_title)
@@ -427,7 +425,7 @@ def build_uv_view(sheet) -> Gtk.Box:
     # 5. WHO UV Scale Card
     who_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     who_card.add_css_class("weather-glass-card")
-    lbl_who_title = Gtk.Label(label="ШКАЛА УФ-ИНДЕКСА ВОЗ" if is_ru else "WHO UV INDEX SCALE")
+    lbl_who_title = Gtk.Label(label=t("weather_uv_who_title"))
     lbl_who_title.add_css_class("weather-section-title")
     lbl_who_title.set_halign(Gtk.Align.START)
     who_card.append(lbl_who_title)
@@ -436,11 +434,11 @@ def build_uv_view(sheet) -> Gtk.Box:
     who_card.append(div_w)
 
     who_items = [
-        ("0 – 2", "Низкий" if is_ru else "Low", "Защита не требуется. Безопасно для кожи." if is_ru else "No protection needed. Safe for skin."),
-        ("3 – 5", "Умеренный" if is_ru else "Moderate", "Необходима защита. SPF 30+, очки, головной убор." if is_ru else "Protection required. SPF 30+, sunglasses."),
-        ("6 – 7", "Высокий" if is_ru else "High", "Тень в полуденные часы, SPF 50+, закрытая одежда." if is_ru else "Seek shade at midday, SPF 50+, protective clothing."),
-        ("8 – 10", "Очень высокий" if is_ru else "Very High", "Опасно. Избегайте нахождения на открытом солнце." if is_ru else "Dangerous. Avoid open sun during midday hours."),
-        ("11+", "Экстремальный" if is_ru else "Extreme", "Максимальный риск ожогов за 5–10 минут." if is_ru else "Extreme burn risk in 5–10 minutes."),
+        ("0 – 2", t("weather_uv_low"), t("weather_uv_who_desc_0_2")),
+        ("3 – 5", t("weather_uv_moderate"), t("weather_uv_who_desc_3_5")),
+        ("6 – 7", t("weather_uv_high"), t("weather_uv_who_desc_6_7")),
+        ("8 – 10", t("weather_uv_very_high"), t("weather_uv_who_desc_8_10")),
+        ("11+", t("weather_uv_extreme"), t("weather_uv_who_desc_11")),
     ]
     for idx_range, name, desc in who_items:
         r = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)

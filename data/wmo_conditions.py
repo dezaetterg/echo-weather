@@ -9,7 +9,7 @@ import urllib.request
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from i18n import get_current_language, t
+from i18n import format_day_month, get_current_language, get_month_name, t
 from logger import get_logger
 from services.astronomy import (
     calculate_annual_solar_table,
@@ -1086,29 +1086,177 @@ def get_smart_day_summary(
         return t('weather_summary_future', cond=cond_text.lower(), min=t_min, max=t_max, app_min=app_min, app_max=app_max, prob=p_prob)
 
 
+COMPASS_CARDINALS_4: dict[str, tuple[str, str, str, str]] = {
+    "ru": ("С", "В", "Ю", "З"),
+    "en": ("N", "E", "S", "W"),
+    "es": ("N", "E", "S", "O"),
+    "de": ("N", "O", "S", "W"),
+    "fr": ("N", "E", "S", "O"),
+    "zh": ("北", "东", "南", "西"),
+    "ja": ("北", "東", "南", "西"),
+    "it": ("N", "E", "S", "O"),
+    "pt": ("N", "L", "S", "O"),
+    "tr": ("K", "D", "G", "B"),
+    "uk": ("Пн", "Сх", "Пд", "Зх"),
+    "kk": ("С", "Ш", "О", "Б"),
+    "ar": ("ش", "ق", "ج", "غ"),
+}
+
+WIND_DIRECTIONS_8: dict[str, list[tuple[str, str]]] = {
+    "ru": [
+        ("С", "Северный ветер"),
+        ("СВ", "Северо-восточный ветер"),
+        ("В", "Восточный ветер"),
+        ("ЮВ", "Юго-восточный ветер"),
+        ("Ю", "Южный ветер"),
+        ("ЮЗ", "Юго-западный ветер"),
+        ("З", "Западный ветер"),
+        ("СЗ", "Северо-западный ветер"),
+    ],
+    "en": [
+        ("N", "North wind"),
+        ("NE", "Northeast wind"),
+        ("E", "East wind"),
+        ("SE", "Southeast wind"),
+        ("S", "South wind"),
+        ("SW", "Southwest wind"),
+        ("W", "West wind"),
+        ("NW", "Northwest wind"),
+    ],
+    "es": [
+        ("N", "Viento del norte"),
+        ("NE", "Viento del noreste"),
+        ("E", "Viento del este"),
+        ("SE", "Viento del sureste"),
+        ("S", "Viento del sur"),
+        ("SW", "Viento del suroeste"),
+        ("W", "Viento del oeste"),
+        ("NW", "Viento del noroeste"),
+    ],
+    "de": [
+        ("N", "Nordwind"),
+        ("NO", "Nordostwind"),
+        ("O", "Ostwind"),
+        ("SO", "Südostwind"),
+        ("S", "Südwind"),
+        ("SW", "Südwestwind"),
+        ("W", "Westwind"),
+        ("NW", "Nordwestwind"),
+    ],
+    "fr": [
+        ("N", "Vent du nord"),
+        ("NE", "Vent du nord-est"),
+        ("E", "Vent de l'est"),
+        ("SE", "Vent du sud-est"),
+        ("S", "Vent du sud"),
+        ("SW", "Vent du sud-ouest"),
+        ("O", "Vent de l'ouest"),
+        ("NO", "Vent du nord-ouest"),
+    ],
+    "zh": [
+        ("北", "北风"),
+        ("东北", "东北风"),
+        ("东", "东风"),
+        ("东南", "东南风"),
+        ("南", "南风"),
+        ("西南", "西南风"),
+        ("西", "西风"),
+        ("西北", "西北风"),
+    ],
+    "ja": [
+        ("北", "北風"),
+        ("北東", "北東の風"),
+        ("東", "東風"),
+        ("南東", "南東の風"),
+        ("南", "南風"),
+        ("南西", "南西の風"),
+        ("西", "西風"),
+        ("北西", "北西の風"),
+    ],
+    "it": [
+        ("N", "Vento da nord"),
+        ("NE", "Vento da nord-est"),
+        ("E", "Vento da est"),
+        ("SE", "Vento da sud-est"),
+        ("S", "Vento da sud"),
+        ("SW", "Vento da sud-ovest"),
+        ("O", "Vento da ovest"),
+        ("NO", "Vento da nord-ovest"),
+    ],
+    "pt": [
+        ("N", "Vento do norte"),
+        ("NE", "Vento do nordeste"),
+        ("L", "Vento do leste"),
+        ("SE", "Vento do sudeste"),
+        ("S", "Vento do sul"),
+        ("SO", "Vento do sudoeste"),
+        ("O", "Vento do oeste"),
+        ("NO", "Vento do noroeste"),
+    ],
+    "tr": [
+        ("K", "Kuzey rüzgarı"),
+        ("KD", "Kuzeydoğu rüzgarı"),
+        ("D", "Doğu rüzgarı"),
+        ("GD", "Güneydoğu rüzgarı"),
+        ("G", "Güney rüzgarı"),
+        ("GB", "Güneybatı rüzgarı"),
+        ("B", "Batı rüzgarı"),
+        ("KB", "Kuzeybatı rüzgarı"),
+    ],
+    "uk": [
+        ("Пн", "Північний вітер"),
+        ("Пн-Сх", "Північно-східний вітер"),
+        ("Сх", "Східний вітер"),
+        ("Пд-Сх", "Південно-східний вітер"),
+        ("Пд", "Південний вітер"),
+        ("Пд-Зх", "Південно-західний вітер"),
+        ("Зх", "Західний вітер"),
+        ("Пн-Зх", "Північно-західний вітер"),
+    ],
+    "kk": [
+        ("С", "Солтүстік желі"),
+        ("СШ", "Солтүстік-шығыс желі"),
+        ("Ш", "Шығыс желі"),
+        ("ОШ", "Оңтүстік-шығыс желі"),
+        ("О", "Оңтүстік желі"),
+        ("ОБ", "Оңтүстік-батыс желі"),
+        ("Б", "Батыс желі"),
+        ("СБ", "Солтүстік-батыс желі"),
+    ],
+    "ar": [
+        ("ش", "رياح شمالية"),
+        ("ش.ش", "رياح شمالية شرقية"),
+        ("ق", "رياح شرقية"),
+        ("ج.ش", "رياح جنوبية شرقية"),
+        ("ج", "رياح جنوبية"),
+        ("ج.غ", "رياح جنوبية غربية"),
+        ("غ", "رياح غربية"),
+        ("ش.غ", "رياح شمالية غربية"),
+    ],
+}
+
+WIND_DIRECTIONS_16: dict[str, list[str]] = {
+    "ru": ["С", "ССВ", "СВ", "ВСВ", "В", "ВЮВ", "ЮВ", "ЮЮВ", "Ю", "ЮЮЗ", "ЮЗ", "ЗЮЗ", "З", "ЗСЗ", "СЗ", "ССЗ"],
+    "en": ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"],
+    "es": ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"],
+    "de": ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSO", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"],
+    "fr": ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"],
+    "zh": ["北", "北东北", "东北", "东东北", "东", "东东南", "东南", "南东南", "南", "南西南", "西南", "西西南", "西", "西西北", "西北", "北西北"],
+    "ja": ["北", "北北東", "北東", "東北東", "東", "東南東", "南東", "南南東", "南", "南南西", "南西", "西南西", "西", "西北西", "北西", "北北西"],
+    "it": ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"],
+    "pt": ["N", "NNE", "NE", "ENE", "L", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"],
+    "tr": ["K", "KKD", "KD", "DKD", "D", "DGD", "GD", "GGD", "G", "GGB", "GB", "BGB", "B", "BKB", "KB", "KKB"],
+    "uk": ["Пн", "Пн-Пн-Сх", "Пн-Сх", "Сх-Пн-Сх", "Сх", "Сх-Пд-Сх", "Пд-Сх", "Пд-Пд-Сх", "Пд", "Пд-Пд-Зх", "Пд-Зх", "Зх-Пд-Зх", "Зх", "Зх-Пн-Зх", "Пн-Зх", "Пн-Пн-Зх"],
+    "kk": ["С", "ССШ", "СШ", "ШСШ", "Ш", "ШОШ", "ОШ", "ООШ", "О", "ООБ", "ОБ", "БОБ", "Б", "БСБ", "СБ", "ССБ"],
+    "ar": ["ش", "ش.ش.ش", "ش.ش", "ش.ش.ق", "ق", "ق.ج.ش", "ج.ش", "ج.ج.ش", "ج", "ج.ج.غ", "ج.غ", "غ.ج.غ", "غ", "غ.ش.غ", "ش.غ", "ش.ش.غ"],
+}
+
+
 def get_wind_direction_info(deg: float, lang: str = 'ru') -> tuple[str, str]:
     deg = (float(deg) % 360 + 360) % 360
-    directions_ru = [
-        ('С', 'Северный ветер'),
-        ('СВ', 'Северо-восточный ветер'),
-        ('В', 'Восточный ветер'),
-        ('ЮВ', 'Юго-восточный ветер'),
-        ('Ю', 'Южный ветер'),
-        ('ЮЗ', 'Юго-западный ветер'),
-        ('З', 'Западный ветер'),
-        ('СЗ', 'Северо-западный ветер'),
-    ]
-    directions_en = [
-        ('N', 'North wind'),
-        ('NE', 'Northeast wind'),
-        ('E', 'East wind'),
-        ('SE', 'Southeast wind'),
-        ('S', 'South wind'),
-        ('SW', 'Southwest wind'),
-        ('W', 'West wind'),
-        ('NW', 'Northwest wind'),
-    ]
-    dirs = directions_ru if lang == 'ru' else directions_en
+    if not lang:
+        lang = 'ru'
+    dirs = WIND_DIRECTIONS_8.get(lang, WIND_DIRECTIONS_8.get('en', WIND_DIRECTIONS_8['ru']))
     idx = int((deg + 22.5) // 45) % 8
     return dirs[idx][0], dirs[idx][1]
 
@@ -1128,7 +1276,6 @@ def ensure_days_detailed(data: dict, lang: str = "ru") -> dict:
         if not first_date or first_date == city_today:
             return data
 
-    is_ru = (lang == "ru")
     today_dt = datetime.now()
     today_w = today_dt.weekday()
     temp = data.get("temp", 20)
@@ -1139,10 +1286,12 @@ def ensure_days_detailed(data: dict, lang: str = "ru") -> dict:
     yesterday_max = t_max
     diff_yesterday = t_max - yesterday_max
 
-    if is_ru:
-        comp_summary = "Максимальная температура сегодня такая же, как вчера."
+    if abs(diff_yesterday) < 0.5:
+        comp_summary = t("weather_comp_today_same", lang=lang)
+    elif diff_yesterday > 0:
+        comp_summary = t("weather_comp_today_warmer", diff=round(abs(diff_yesterday)), lang=lang)
     else:
-        comp_summary = "Today's high is the same as yesterday's."
+        comp_summary = t("weather_comp_today_cooler", diff=round(abs(diff_yesterday)), lang=lang)
 
     data["yesterday_comp"] = {
         "summary": comp_summary,
@@ -1571,15 +1720,24 @@ MONTHS_EN_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
 
 _climate_fetch_in_progress = set()
 
-def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: float, hourly_today: list = None, is_ru: bool = True) -> dict:
+def calculate_climate_averages(
+    lat: float,
+    lon: float,
+    t_max: float,
+    t_min: float,
+    hourly_today: list = None,
+    is_ru: bool | None = None,
+    lang: str | None = None,
+) -> dict:
+    active_lang = lang or (get_current_language() if is_ru is None else ("ru" if is_ru else "en"))
     today = datetime.now().date()
     cur_m = today.month  # 1..12
     cur_m_idx = cur_m - 1
     today_str_md = today.strftime('%m-%d')
 
-    today_formatted = f"{today.day} {MONTHS_RU_GENITIVE[cur_m_idx]}" if is_ru else today.strftime('%B %d')
+    today_formatted = format_day_month(today.day, today.month, lang=active_lang)
     date_30d_ago = today - timedelta(days=30)
-    date_30d_formatted = f"{date_30d_ago.day} {MONTHS_RU_GENITIVE[date_30d_ago.month - 1]}" if is_ru else date_30d_ago.strftime('%B %d')
+    date_30d_formatted = format_day_month(date_30d_ago.day, date_30d_ago.month, lang=active_lang)
 
     cache_dir = Path(os.path.expanduser('~/.cache/echo_weather'))
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -1603,7 +1761,7 @@ def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: floa
         for m in range(1, 13):
             monthly_list.append({
                 'month': m,
-                'name': MONTHS_RU_SHORT[m - 1] if is_ru else MONTHS_EN_SHORT[m - 1],
+                'name': get_month_name(m, short=True, lang=active_lang),
                 'temp_min': months_temp_min[m - 1],
                 'temp_max': months_temp_max[m - 1],
                 'precip_mm': months_precip[m - 1]
@@ -1661,7 +1819,7 @@ def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: floa
                         avg_p = round(sum(m_precip_annual[m].values()) / max(1, len(m_precip_annual[m])))
                         monthly_data.append({
                             'month': m,
-                            'name': MONTHS_RU_SHORT[m - 1],
+                            'name': get_month_name(m, short=True, lang=active_lang),
                             'temp_min': avg_min,
                             'temp_max': avg_max,
                             'precip_mm': avg_p
@@ -1706,14 +1864,15 @@ def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: floa
 
     temp_diff = round(t_max - avg_max)
     temp_diff_str_short = f"+{temp_diff}°" if temp_diff > 0 else (f"{temp_diff}°" if temp_diff < 0 else "0°")
+    avg_label = t("weather_climate_average_label", _lang=active_lang)
     if temp_diff > 0:
-        temp_diff_str = f"+{temp_diff}° > среднего" if is_ru else f"+{temp_diff}° > average"
+        temp_diff_str = f"+{temp_diff}° > {avg_label}"
     elif temp_diff < 0:
-        temp_diff_str = f"{temp_diff}° < среднего" if is_ru else f"{temp_diff}° < average"
+        temp_diff_str = f"{temp_diff}° < {avg_label}"
     else:
-        temp_diff_str = "В пределах нормы" if is_ru else "Near average"
+        temp_diff_str = t("weather_climate_near_norm", _lang=active_lang)
 
-    temp_sub_str = f"Средн. макс: {avg_max}°" if is_ru else f"Avg high: {avg_max}°"
+    temp_sub_str = t("weather_climate_avg_high", _lang=active_lang, val=avg_max)
 
     # 24-hour diurnal envelope for normal range
     hourly_normal_band = []
@@ -1773,53 +1932,80 @@ def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: floa
     avg_30d_total = round(avg_30d_total)
 
     precip_diff = round(actual_30d_total - avg_30d_total)
+    precip_u = t("weather_climate_precip_unit", _lang=active_lang)
     if precip_diff > 0:
-        precip_diff_str = f"+{precip_diff} мм > среднего" if is_ru else f"+{precip_diff} mm > average"
+        precip_diff_str = f"+{precip_diff} {precip_u} > {avg_label}"
     elif precip_diff < 0:
-        precip_diff_str = f"{precip_diff} мм < среднего" if is_ru else f"{precip_diff} mm < average"
+        precip_diff_str = f"{precip_diff} {precip_u} < {avg_label}"
     else:
-        precip_diff_str = "Около нормы" if is_ru else "Near average"
+        precip_diff_str = t("weather_climate_precip_near_norm", _lang=active_lang)
 
-    precip_sub_str = f"Средн. за 30 дней: {avg_30d_total} мм" if is_ru else f"30-day avg: {avg_30d_total} mm"
+    precip_sub_str = t("weather_climate_precip_avg_30d", _lang=active_lang, val=avg_30d_total, unit=precip_u)
 
-    cur_m_name = MONTHS_RU_PREP[cur_m_idx] if is_ru else ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][cur_m_idx]
+    cur_m_name = get_month_name(cur_m, short=False, lang=active_lang)
+    cur_m_name_gen = get_month_name(cur_m, short=False, lang=active_lang, genitive=True)
     cur_m_min = climate_norm['monthly'][cur_m_idx]['temp_min']
     cur_m_max = climate_norm['monthly'][cur_m_idx]['temp_max']
     cur_m_precip = climate_norm['monthly'][cur_m_idx]['precip_mm']
 
-    # Original Russian meteorological texts
     if temp_diff > 0:
-        temp_comparison_word = f"превышает климатическую норму на {temp_diff}°"
+        temp_comparison_word = t("weather_climate_temp_above", _lang=active_lang, diff=temp_diff)
     elif temp_diff < 0:
-        temp_comparison_word = f"ниже климатической нормы на {abs(temp_diff)}°"
+        temp_comparison_word = t("weather_climate_temp_below", _lang=active_lang, diff=abs(temp_diff))
     else:
-        temp_comparison_word = "точно соответствует климатической норме"
+        temp_comparison_word = t("weather_climate_temp_exact", _lang=active_lang)
 
-    summary_temp = (
-        f"Климатический интервал для {today_formatted} составляет от {p10}° до {p90}°, "
-        f"а типичный максимум дня достигает {avg_max}°. Сегодня воздух прогрелся до {t_max}°, что {temp_comparison_word}."
+    summary_temp = t(
+        "weather_climate_summary_temp",
+        _lang=active_lang,
+        date=today_formatted,
+        p10=p10,
+        p90=p90,
+        avg_max=avg_max,
+        t_max=t_max,
+        comparison=temp_comparison_word,
     )
 
-    monthly_temp_sub = (
-        f"Среднесуточный температурный минимум для {cur_m_name} составляет {cur_m_min}°, а максимум — {cur_m_max}°."
+    monthly_temp_sub = t(
+        "weather_climate_monthly_temp_sub",
+        _lang=active_lang,
+        month=cur_m_name_gen,
+        min=cur_m_min,
+        max=cur_m_max,
     )
 
     if precip_diff > 0:
-        precip_comparison_word = f"выше нормы на {precip_diff} мм"
+        precip_comparison_word = t("weather_climate_precip_above", _lang=active_lang, diff=precip_diff)
     elif precip_diff < 0:
-        precip_comparison_word = f"ниже климатической нормы на {abs(precip_diff)} мм"
+        precip_comparison_word = t("weather_climate_precip_below", _lang=active_lang, diff=abs(precip_diff))
     else:
-        precip_comparison_word = "соответствует среднемноголетнему уровню"
+        precip_comparison_word = t("weather_climate_precip_exact", _lang=active_lang)
 
-    summary_precip = (
-        f"По многолетним климатическим данным, обычный объем осадков с {date_30d_formatted} по {today_formatted} "
-        f"составляет {avg_30d_total} мм. Фактическое количество осадков за последние 30 дней достигло {actual_30d_total} мм, "
-        f"что {precip_comparison_word}."
+    summary_precip = t(
+        "weather_climate_summary_precip",
+        _lang=active_lang,
+        start_date=date_30d_formatted,
+        end_date=today_formatted,
+        avg_precip=avg_30d_total,
+        actual_precip=actual_30d_total,
+        comparison=precip_comparison_word,
     )
 
-    monthly_precip_sub = (
-        f"Средний общий объем осадков за {cur_m_name} составляет {cur_m_precip} мм."
+    monthly_precip_sub = t(
+        "weather_climate_monthly_precip_sub",
+        _lang=active_lang,
+        month=cur_m_name,
+        precip=cur_m_precip,
     )
+
+    # Normalize monthly lists to ensure localized month names
+    normalized_monthly = []
+    for m_idx, m_item in enumerate(climate_norm['monthly']):
+        m_num = m_item.get('month', m_idx + 1)
+        m_copy = dict(m_item)
+        m_copy['month'] = m_num
+        m_copy['name'] = get_month_name(m_num, short=True, lang=active_lang)
+        normalized_monthly.append(m_copy)
 
     return {
         'temp_diff': temp_diff,
@@ -1833,7 +2019,7 @@ def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: floa
         'hourly_normal_band': hourly_normal_band,
         'summary_temp': summary_temp,
         'monthly_temp_sub': monthly_temp_sub,
-        'monthly_temp': climate_norm['monthly'],
+        'monthly_temp': normalized_monthly,
 
         'precip_diff': precip_diff,
         'precip_diff_str': precip_diff_str,
@@ -1844,7 +2030,7 @@ def calculate_climate_averages(lat: float, lon: float, t_max: float, t_min: floa
         'precip_30d_dates': precip_30d_dates,
         'summary_precip': summary_precip,
         'monthly_precip_sub': monthly_precip_sub,
-        'monthly_precip': climate_norm['monthly'],
+        'monthly_precip': normalized_monthly,
 
         'current_month_idx': cur_m_idx,
         'today_formatted': today_formatted,

@@ -428,6 +428,8 @@ class WeatherForecastData(MutableMapping):
     is_consensus: bool = False
     sources_count: int = 1
     source_name: str = ""
+    is_fallback: bool = False
+    fallback_reason: str = ""
 
     raw_extra: dict[str, Any] = field(default_factory=dict)
     _cached_dict: dict[str, Any] | None = field(default=None, init=False, repr=False)
@@ -475,6 +477,9 @@ class WeatherForecastData(MutableMapping):
             "climate_averages": self.climate_averages,
             "moon_phase": self.moon_phase,
             "yesterday_comp": _to_data(self.yesterday_comp),
+            "source_name": self.source_name,
+            "is_fallback": self.is_fallback,
+            "fallback_reason": self.fallback_reason,
             "solar_details": _to_data(self.solar_details),
             "detailed_moon": _to_data(self.detailed_moon),
             "hourly": [_to_data(h) for h in self.hourly] if isinstance(self.hourly, list) else self.hourly,
@@ -498,7 +503,7 @@ class WeatherForecastData(MutableMapping):
             "cached_at", "climate_averages", "moon_phase", "yesterday_comp", "solar_details",
             "detailed_moon", "hourly", "daily", "days_detailed",
             "weather_model", "cell_selection", "elevation", "precip_nowcast", "minutely_15",
-            "forecast_source", "is_consensus", "sources_count"
+            "forecast_source", "is_consensus", "sources_count", "source_name", "is_fallback", "fallback_reason"
         }
         current_keys = {f.name for f in CurrentConditions.__dataclass_fields__.values()}
         all_handled_keys = known_keys | current_keys
@@ -562,6 +567,8 @@ class WeatherForecastData(MutableMapping):
             is_consensus=bool(data.get("is_consensus", False)),
             sources_count=int(data.get("sources_count", 1)),
             source_name=str(data.get("source_name", "")),
+            is_fallback=bool(data.get("is_fallback", False)),
+            fallback_reason=str(data.get("fallback_reason", "")),
             raw_extra=raw_extra,
         )
 

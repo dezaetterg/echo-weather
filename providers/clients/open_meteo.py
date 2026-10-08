@@ -16,7 +16,7 @@ from typing import Any
 from i18n import get_current_language, t
 from logger import get_logger
 from providers.clients.base import BaseWeatherClient
-from services.astronomy import calculate_detailed_moon, calculate_solar_details
+from services.astronomy import calculate_annual_solar_table, calculate_detailed_moon, calculate_solar_details
 
 logger = get_logger("weather.open_meteo")
 
@@ -185,27 +185,27 @@ class OpenMeteoClient(BaseWeatherClient):
         wind_cardinal, wind_desc = get_wind_direction_info(wind_dir, lang=lang)
 
         if uv_index < 3:
-            uv_level = "Низкий" if is_ru else "Low"
-            uv_desc = "Защита не требуется." if is_ru else "No protection needed."
+            uv_level = t("weather_uv_low")
+            uv_desc = t("weather_uv_low_desc")
         elif uv_index < 6:
-            uv_level = "Умеренный" if is_ru else "Moderate"
-            uv_desc = "Используйте защиту от солнца." if is_ru else "Use sun protection."
+            uv_level = t("weather_uv_moderate")
+            uv_desc = t("weather_uv_moderate_desc")
         elif uv_index < 8:
-            uv_level = "Высокий" if is_ru else "High"
-            uv_desc = "Необходима защита кожи и глаз." if is_ru else "Protection needed."
+            uv_level = t("weather_uv_high")
+            uv_desc = t("weather_uv_high_desc")
         elif uv_index < 11:
-            uv_level = "Очень высокий" if is_ru else "Very High"
-            uv_desc = "Очень высокий уровень. Избегайте полуденного солнца." if is_ru else "Very high levels. Avoid midday sun."
+            uv_level = t("weather_uv_very_high")
+            uv_desc = t("weather_uv_very_high_desc")
         else:
-            uv_level = "Экстремальный" if is_ru else "Extreme"
-            uv_desc = "Экстремальный уровень. Старайтесь оставаться в тени." if is_ru else "Extreme levels. Stay indoors or shaded."
+            uv_level = t("weather_uv_extreme")
+            uv_desc = t("weather_uv_extreme_desc")
 
         if press_mm < 745:
-            pressure_desc = "Низкое давление." if is_ru else "Low pressure."
+            pressure_desc = t("weather_pressure_low")
         elif press_mm > 765:
-            pressure_desc = "Высокое давление." if is_ru else "High pressure."
+            pressure_desc = t("weather_pressure_high")
         else:
-            pressure_desc = "Нормальное давление." if is_ru else "Normal pressure."
+            pressure_desc = t("weather_pressure_normal")
 
         # 15-минутный радарный прогноз осадков (nowcasting)
         minutely_15 = raw.get("minutely_15", {})
@@ -283,8 +283,9 @@ class OpenMeteoClient(BaseWeatherClient):
         h_vis = hourly.get("visibility", [])
         h_press = hourly.get("surface_pressure", [])
 
-        solar_details = calculate_solar_details(lat, lon, city_now.date(), utc_offset / 3600.0, is_ru=is_ru)
-        detailed_moon = calculate_detailed_moon(lat, lon, city_now, utc_offset / 3600.0, is_ru=is_ru)
+        solar_details = calculate_solar_details(lat, lon, city_now.date(), utc_offset / 3600.0, lang=lang)
+        solar_details["annual_table"] = calculate_annual_solar_table(lat, lon, utc_offset / 3600.0, lang=lang)
+        detailed_moon = calculate_detailed_moon(lat, lon, city_now, utc_offset / 3600.0, lang=lang)
 
         hourly_today_for_climate = []
         today_start_h = today_d_idx * 24
@@ -293,14 +294,14 @@ class OpenMeteoClient(BaseWeatherClient):
             for h_i in range(today_start_h, today_end_h):
                 hourly_today_for_climate.append({"temp": round(h_temps[h_i])})
 
-        climate_averages = calculate_climate_averages(lat, lon, t_max, t_min, hourly_today=hourly_today_for_climate, is_ru=is_ru)
+        climate_averages = calculate_climate_averages(lat, lon, t_max, t_min, hourly_today=hourly_today_for_climate, lang=lang)
         diff_val = climate_averages.get("temp_diff_str_short") or climate_averages.get("temp_diff_str") or "0°"
         if not diff_val.endswith("°"):
             diff_val = f"{diff_val}°"
-        avg_diff_str = f"{diff_val} к норме" if is_ru else f"{diff_val} vs norm"
+        avg_diff_str = t("weather_climate_vs_norm", diff=diff_val)
         avg_norm_max = climate_averages.get("temp_avg_max", t_max)
         avg_desc = climate_averages.get("summary_temp") or (
-            "Температура около многолетней климатической нормы." if is_ru else "Temperature close to long-term climate average."
+            t("weather_climate_near_norm")
         )
 
         hourly_list = []
@@ -565,7 +566,7 @@ class OpenMeteoClient(BaseWeatherClient):
             "lon": lon,
             "temp": temp,
             "feels_like": feels_like,
-            "feels_like_desc": "Похоже на фактическую температуру." if is_ru else "Feels like actual temperature.",
+            "feels_like_desc": t("weather_feels_balanced"),
             "avg_diff_str": avg_diff_str,
             "avg_norm_max": avg_norm_max,
             "avg_desc": avg_desc,
@@ -582,7 +583,7 @@ class OpenMeteoClient(BaseWeatherClient):
             "uv_level": uv_level,
             "uv_desc": uv_desc,
             "visibility_km": vis_km,
-            "visibility_desc": "Отличная видимость." if is_ru else "Perfect visibility.",
+            "visibility_desc": t("weather_visibility_clear"),
             "precipitation": precipitation,
             "precipitation_sum": precip_sum,
             "precip_desc": precip_desc,

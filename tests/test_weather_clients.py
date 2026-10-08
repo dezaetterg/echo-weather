@@ -216,4 +216,60 @@ def test_met_norway_preserves_real_temperature_without_climatology():
     # Проверяем, что реальная температура 17.6 округлена до 18 и не заменена климатической нормой 6
     assert parsed["temp"] == 18
     assert parsed["temp"] != 6
+    assert "solar_details" in parsed
+    assert "annual_table" in parsed["solar_details"]
+    assert "months" in parsed["solar_details"]["annual_table"]
+
+
+def test_met_norway_visibility_and_annual_solar_table():
+    client = MetNorwayClient()
+    mock_data = {
+        "properties": {
+            "timeseries": [
+                {
+                    "time": "2026-10-02T10:00:00Z",
+                    "data": {
+                        "instant": {
+                            "details": {
+                                "air_temperature": 15.0,
+                                "dew_point_temperature": 14.5,
+                                "air_pressure_at_sea_level": 1013.0,
+                                "relative_humidity": 97.0,
+                                "wind_speed": 2.0,
+                                "wind_from_direction": 180.0,
+                                "cloud_area_fraction": 90.0,
+                            }
+                        },
+                        "next_1_hours": {
+                            "summary": {"symbol_code": "fog"},
+                            "details": {"precipitation_amount": 0.0, "probability_of_precipitation": 10.0},
+                        },
+                        "next_6_hours": {
+                            "summary": {"symbol_code": "fog"},
+                        },
+                    },
+                }
+            ]
+        }
+    }
+
+    parsed = client.parse_forecast_data(
+        mock_data,
+        lat=53.7557,
+        lon=87.1099,
+        city_info={"name_ru": "Новокузнецк", "name_en": "Novokuznetsk"},
+        lang="ru",
+    )
+
+    assert parsed is not None
+    assert "solar_details" in parsed
+    assert "annual_table" in parsed["solar_details"]
+    assert "months" in parsed["solar_details"]["annual_table"]
+    assert "days_detailed" in parsed
+    cur_day = parsed["days_detailed"][0]
+    assert "hourly_vis_km" in cur_day
+    # High humidity and fog should drop visibility well below 10 km
+    assert cur_day["min_visibility_km"] < 5.0
+    assert cur_day["hourly_vis_km"][10] < 5.0
+
 

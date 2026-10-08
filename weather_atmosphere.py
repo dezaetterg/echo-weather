@@ -249,11 +249,10 @@ DRIZZLE_PULSE_DAY_STOPS = (
 
 class AtmosphericCapsuleBox(Gtk.Box):
     """
-    Full-window atmospheric canvas for Echo Search (macOS/iOS-inspired).
+    Full-window atmospheric canvas for Echo Weather.
     Renders dynamic full-bleed weather environments (drifting cumulus/overcast clouds,
     falling rain/drizzle, radiant sun flare, or deep starry night sky with moon glow)
-    across the entire 1070x560 capsule, combined with a frosted glass readability tint
-    for left-side controls.
+    across the entire capsule.
     """
 
     ALL_CANVAS_CLASSES = [

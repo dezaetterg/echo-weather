@@ -9,5 +9,5 @@ Maintainer: Demid <dezaetterg@users.noreply.github.com>
 Homepage: https://github.com/demid/echo-weather
 Description: Atmospheric meteorological desktop application
  Echo Weather is an atmospheric meteorological desktop application for Linux
- with liquid glass aesthetics, real-time particle physics, and professional
- weather analytics.
+ with real-time particle rendering, multi-model forecast consensus, and
+ detailed meteorological analytics.

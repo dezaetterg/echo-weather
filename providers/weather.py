@@ -673,14 +673,14 @@ class WeatherProvider(BaseProvider):
         if "solar_details" not in weather_data or not weather_data.get("solar_details"):
             utc_off = weather_data.get("utc_offset_seconds", 0) / 3600.0
             c_date = (utc_now + timedelta(hours=utc_off)).date()
-            sd = calculate_solar_details(lat, lon, c_date, utc_off, is_ru=is_ru)
-            sd["annual_table"] = calculate_annual_solar_table(lat, lon, utc_off, is_ru=is_ru)
+            sd = calculate_solar_details(lat, lon, c_date, utc_off, lang=lang)
+            sd["annual_table"] = calculate_annual_solar_table(lat, lon, utc_off, lang=lang)
             weather_data["solar_details"] = sd
 
         if "detailed_moon" not in weather_data or not weather_data.get("detailed_moon"):
             utc_off = weather_data.get("utc_offset_seconds", 0) / 3600.0
             c_now = datetime.now(timezone.utc) + timedelta(hours=utc_off)
-            weather_data["detailed_moon"] = calculate_detailed_moon(lat, lon, c_now, utc_off, is_ru=is_ru)
+            weather_data["detailed_moon"] = calculate_detailed_moon(lat, lon, c_now, utc_off, lang=lang)
 
         max_gust = round(weather_data.get("wind_gusts", round(weather_data.get("wind_speed", 0))))
         if is_day and w_code in (0, 1):

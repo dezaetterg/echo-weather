@@ -1,5 +1,5 @@
 """
-Универсальный виджет полосы сравнения день-ко-дню (Day Comparison Bar) в эстетике Apple Weather.
+Виджет полосы сравнения показателей день-к-дню (Day Comparison Bar).
 Поддерживает интервальные метрики (диапазон температур, давление)
 и точечные метрики (УФ, ветер, осадки, влажность, видимость).
 """
@@ -40,11 +40,10 @@ class DayComparisonBarArea(Gtk.DrawingArea):
 
     def update_data(self, t_min_today, t_max_today, t_min_yesterday, t_max_yesterday):
         """Совместимость для экрана общих условий."""
-        is_ru = (get_current_language() == "ru")
         self.update_range(
             "conditions",
-            "Сегодня" if is_ru else "Today",
-            "Вчера" if is_ru else "Yesterday",
+            t("weather_today"),
+            t("weather_yesterday"),
             t_min_today,
             t_max_today,
             t_min_yesterday,
@@ -189,7 +188,7 @@ class DayComparisonBarArea(Gtk.DrawingArea):
 
         def draw_row(y, label, val_text, is_cur, x1, x2):
             cr.set_source_rgba(1, 1, 1, 0.90 if is_cur else 0.55)
-            cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(11.0)
             cr.move_to(8, y + 10)
             cr.show_text(label)
@@ -211,7 +210,7 @@ class DayComparisonBarArea(Gtk.DrawingArea):
             cr.restore()
 
             cr.set_source_rgba(1, 1, 1, 0.85 if is_cur else 0.50)
-            cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if is_cur else cairo.FONT_WEIGHT_NORMAL)
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if is_cur else cairo.FONT_WEIGHT_NORMAL)
             cr.set_font_size(10.5)
             ext = cr.text_extents(val_text)
             cr.move_to(width - ext.width - 8, y + 10)

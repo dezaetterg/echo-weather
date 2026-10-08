@@ -14,7 +14,7 @@ from gi.repository import Gtk
 
 from detail_cards.base import BaseWeatherHourlyArea
 from detail_cards.comparison_bar import DayComparisonBarArea
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class HumidityHourlyArea(BaseWeatherHourlyArea):
@@ -121,12 +121,11 @@ class HumidityHourlyArea(BaseWeatherHourlyArea):
         cr.rectangle(pad_l, y_top_comf, plot_w, y_bot_comf - y_top_comf)
         cr.fill()
 
-        is_ru = (get_current_language() == "ru")
-        cr.select_font_face("Inter, -apple-system, Roboto, Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9)
         cr.set_source_rgba(0.35, 0.85, 0.55, 0.65)
         cr.move_to(pad_l + 8, (y_top_comf + y_bot_comf) / 2.0 + 3.5)
-        cr.show_text("Комфортная зона (40-60%)" if is_ru else "Comfort zone (40-60%)")
+        cr.show_text(t("weather_hum_comfort_zone"))
 
         # 2. Сетка (20%, 40%, 60%, 80%, 100%)
         cr.set_line_width(0.7)
@@ -243,7 +242,6 @@ class HumidityHourlyArea(BaseWeatherHourlyArea):
 
 def build_humidity_view(sheet) -> Gtk.Box:
     """Конструирует контейнер карточки влажности и связывает его с листом деталей."""
-    is_ru = (get_current_language() == "ru")
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
     box.set_valign(Gtk.Align.START)
 
@@ -251,9 +249,7 @@ def build_humidity_view(sheet) -> Gtk.Box:
     hum_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     hum_card.add_css_class("weather-glass-card")
 
-    lbl_h_title = Gtk.Label(
-        label="ОТНОСИТЕЛЬНАЯ ВЛАЖНОСТЬ И ЗОНА КОМФОРТА" if is_ru else "RELATIVE HUMIDITY & COMFORT ZONE"
-    )
+    lbl_h_title = Gtk.Label(label=t("weather_hum_title_hdr"))
     lbl_h_title.add_css_class("weather-section-title")
     lbl_h_title.set_halign(Gtk.Align.START)
     hum_card.append(lbl_h_title)
@@ -289,7 +285,7 @@ def build_humidity_view(sheet) -> Gtk.Box:
     dew_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     dew_card.add_css_class("weather-glass-card")
 
-    lbl_d_title = Gtk.Label(label="ТОЧКА РОСЫ И ОЦЕНКА КОМФОРТА" if is_ru else "DEW POINT & SENSATION")
+    lbl_d_title = Gtk.Label(label=t("weather_hum_dew_sensation_hdr"))
     lbl_d_title.add_css_class("weather-section-title")
     lbl_d_title.set_halign(Gtk.Align.START)
     dew_card.append(lbl_d_title)
@@ -299,7 +295,7 @@ def build_humidity_view(sheet) -> Gtk.Box:
     dew_card.append(div_d)
 
     row_d1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_d1 = Gtk.Label(label="Точка росы" if is_ru else "Dew point")
+    lbl_d1 = Gtk.Label(label=t("weather_dew_point_label"))
     lbl_d1.add_css_class("weather-body-text")
     row_d1.append(lbl_d1)
     sheet.lbl_hum_dew = Gtk.Label(label="--°C")
@@ -310,10 +306,10 @@ def build_humidity_view(sheet) -> Gtk.Box:
     dew_card.append(row_d1)
 
     row_d2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    lbl_d2 = Gtk.Label(label="Восприятие воздуха" if is_ru else "Air sensation")
+    lbl_d2 = Gtk.Label(label=t("weather_hum_air_sensation"))
     lbl_d2.add_css_class("weather-body-text")
     row_d2.append(lbl_d2)
-    sheet.lbl_hum_sensation = Gtk.Label(label="Комфортно" if is_ru else "Comfortable")
+    sheet.lbl_hum_sensation = Gtk.Label(label=t("weather_hum_comfortable"))
     sheet.lbl_hum_sensation.add_css_class("weather-item-bold")
     sheet.lbl_hum_sensation.set_hexpand(True)
     sheet.lbl_hum_sensation.set_halign(Gtk.Align.END)
@@ -332,7 +328,7 @@ def build_humidity_view(sheet) -> Gtk.Box:
     sheet.hum_comp_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     sheet.hum_comp_card.add_css_class("weather-glass-card")
 
-    lbl_h_comp_title = Gtk.Label(label="СРАВНЕНИЕ ПО ДНЯМ" if is_ru else "DAY COMPARISON")
+    lbl_h_comp_title = Gtk.Label(label=t("weather_comp_days_hdr"))
     lbl_h_comp_title.add_css_class("weather-section-title")
     lbl_h_comp_title.set_halign(Gtk.Align.START)
     sheet.hum_comp_card.append(lbl_h_comp_title)
@@ -355,7 +351,7 @@ def build_humidity_view(sheet) -> Gtk.Box:
     # 4. Humidity Scale Reference Card
     scale_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     scale_card.add_css_class("weather-glass-card")
-    lbl_sc_title = Gtk.Label(label="ШКАЛА ВЛАЖНОСТИ ДЛЯ ЧЕЛОВЕКА" if is_ru else "HUMIDITY COMFORT SCALE")
+    lbl_sc_title = Gtk.Label(label=t("weather_hum_scale_hdr"))
     lbl_sc_title.add_css_class("weather-section-title")
     lbl_sc_title.set_halign(Gtk.Align.START)
     scale_card.append(lbl_sc_title)
@@ -364,10 +360,10 @@ def build_humidity_view(sheet) -> Gtk.Box:
     scale_card.append(div_sc)
 
     h_items = [
-        ("< 30%", "Сухой воздух" if is_ru else "Dry air", "Возможна сухость кожи и слизистых оболочек" if is_ru else "May cause dry skin and eyes"),
-        ("30% – 60%", "Идеальный комфорт" if is_ru else "Optimal comfort", "Оптимальная влажность для дыхания и терморегуляции" if is_ru else "Optimal humidity for health and comfort"),
-        ("60% – 80%", "Повышенная" if is_ru else "Elevated", "Испарение пота замедляется, тепло переносится тяжелее" if is_ru else "Sweat evaporation slows, heat feels heavier"),
-        ("> 80%", "Высокая влажность" if is_ru else "High humidity", "Ощущение духоты, риск образования тумана и росы" if is_ru else "Muggy sensation, fog and dew risk"),
+        ("< 30%", t("weather_hum_scale_dry"), t("weather_hum_scale_dry_desc")),
+        ("30% – 60%", t("weather_hum_scale_opt"), t("weather_hum_scale_opt_desc")),
+        ("60% – 80%", t("weather_hum_scale_elev"), t("weather_hum_scale_elev_desc")),
+        ("> 80%", t("weather_hum_scale_high"), t("weather_hum_scale_high_desc")),
     ]
     for pct_r, h_name, h_desc in h_items:
         r = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
