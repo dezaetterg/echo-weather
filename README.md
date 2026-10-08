@@ -1,11 +1,22 @@
+<div align="center">
+
+<img src="assets/echo_weather_logo.png" alt="Echo Weather Logo" width="110">
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="assets/echo_logo.png" alt="Echo Logo" width="110">
+
 # Echo Weather
 
 GNOME desktop application displaying meteorological forecasts. Written in Python with GTK4 and libadwaita.
 
 [English](#echo-weather) | [Русский](#echo-weather-ru)
 
-![License](https://img.shields.io/badge/license-GPL--3.0-blue)
-![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat-square)](https://github.com/dezaetterg/echo-weather/releases)
+[![License](https://img.shields.io/badge/license-GPLv3-green.svg?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Linux-orange.svg?style=flat-square)](https://github.com/dezaetterg/echo-weather)
+[![GTK4](https://img.shields.io/badge/UI-GTK%204-brightgreen.svg?style=flat-square)](https://www.gtk.org/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=flat-square)](https://www.python.org/)
+
+</div>
 
 ---
 
@@ -156,8 +167,11 @@ This project is licensed under the GNU General Public License v3.0. License text
 
 [English](#echo-weather) | [Русский](#echo-weather-ru)
 
-![License](https://img.shields.io/badge/license-GPL--3.0-blue)
-![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat-square)](https://github.com/dezaetterg/echo-weather/releases)
+[![License](https://img.shields.io/badge/license-GPLv3-green.svg?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Linux-orange.svg?style=flat-square)](https://github.com/dezaetterg/echo-weather)
+[![GTK4](https://img.shields.io/badge/UI-GTK%204-brightgreen.svg?style=flat-square)](https://www.gtk.org/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=flat-square)](https://www.python.org/)
 
 ---
 
