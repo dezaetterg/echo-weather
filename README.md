@@ -26,6 +26,30 @@ Echo Weather retrieves weather forecasts from multiple sources and displays them
 
 ---
 
+## Screenshots
+
+<div align="center">
+
+<img src="assets/screenshots/screen_london_clear.png" alt="London - Clear daytime" width="48%">
+&nbsp;
+<img src="assets/screenshots/screen_dubai_night.png" alt="Dubai - Clear night sky" width="48%">
+
+<br><br>
+
+<img src="assets/screenshots/screen_moscow_overcast.png" alt="Moscow - Overcast sky" width="48%">
+&nbsp;
+<img src="assets/screenshots/screen_spb_clouds.png" alt="Saint Petersburg - Partly cloudy" width="48%">
+
+<br><br>
+
+<img src="assets/screenshots/screen_tomsk_rain.png" alt="Tomsk - Rain precipitation" width="48%">
+&nbsp;
+<img src="assets/screenshots/screen_ekb_night_clouds.png" alt="Yekaterinburg - Night with clouds" width="48%">
+
+</div>
+
+---
+
 ## Features
 
 ### Forecast
@@ -185,6 +209,30 @@ This project is licensed under the GNU General Public License v3.0. License text
 ## О приложении
 
 Echo Weather получает прогноз погоды из нескольких источников и отображает его в современном GTK4-интерфейсе. Приложение спроектировано для универсальной работы на любых дистрибутивах Linux (Arch Linux, Debian, Ubuntu, Linux Mint, Fedora, openSUSE и др.) во всех графических окружениях (GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, а также в тайлинговых оконных менеджерах). Интерфейс отрисовывается на чистом GTK 4 и Cairo с автоматической интеграцией стиля Libadwaita в GNOME и встроенным fallback-режимом для окружений без Libadwaita. Данные кешируются на диск и привязываются к сохранённым городам. Интерфейс поддерживает русский и английский язык, переключается автоматически по системной локали.
+
+---
+
+## Скриншоты
+
+<div align="center">
+
+<img src="assets/screenshots/screen_london_clear.png" alt="Лондон - Ясный день" width="48%">
+&nbsp;
+<img src="assets/screenshots/screen_dubai_night.png" alt="Дубай - Ясное звездное небо" width="48%">
+
+<br><br>
+
+<img src="assets/screenshots/screen_moscow_overcast.png" alt="Москва - Сплошная облачность" width="48%">
+&nbsp;
+<img src="assets/screenshots/screen_spb_clouds.png" alt="Санкт-Петербург - Переменная облачность" width="48%">
+
+<br><br>
+
+<img src="assets/screenshots/screen_tomsk_rain.png" alt="Томск - Дождь с анимацией" width="48%">
+&nbsp;
+<img src="assets/screenshots/screen_ekb_night_clouds.png" alt="Екатеринбург - Ночь и облака" width="48%">
+
+</div>
 
 ---
 
