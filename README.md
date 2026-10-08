@@ -6,7 +6,7 @@
 
 # Echo Weather
 
-GNOME desktop application displaying meteorological forecasts. Written in Python with GTK4 and libadwaita.
+GNOME, Cinnamon, and universal Linux desktop application displaying meteorological forecasts. Works across all distributions and desktop environments (GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, tiling WMs). Written in Python with GTK4, Cairo, and optional Libadwaita.
 
 [English](#echo-weather) | [Русский](#echo-weather-ru)
 
@@ -22,7 +22,7 @@ GNOME desktop application displaying meteorological forecasts. Written in Python
 
 ## About
 
-Echo Weather retrieves weather forecasts from multiple sources and displays them in a GTK4 interface. Data is cached to disk and associated with saved locations. The interface supports Russian and English, switching automatically according to system locale.
+Echo Weather retrieves weather forecasts from multiple sources and displays them in a modern GTK4 interface. Built for universal Linux compatibility, it runs on any distribution (Arch Linux, Debian, Ubuntu, Linux Mint, Fedora, openSUSE, and more) across all desktop environments (GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, and tiling window managers). It uses native GTK 4 and Cairo rendering with automatic Libadwaita integration when present and a built-in fallback mode when Libadwaita is not installed. Data is cached to disk and associated with saved locations. The interface supports Russian and English, switching automatically according to system locale.
 
 ---
 
@@ -52,6 +52,13 @@ Echo Weather retrieves weather forecasts from multiple sources and displays them
 - Interface language: ru / en (detected from system locale, configurable in settings)
 - Disk cache for forecasts and geocoding
 - Detailed cards: wind, precipitation, UV, pressure, visibility, humidity, moon, climate, conditions
+- Light and dark themes with adaptive atmospheric backgrounds
+
+### Compatibility
+
+- Distributions: works out of the box on Arch, Debian, Ubuntu, Linux Mint, Fedora, openSUSE, and other Linux distributions
+- Desktop environments: GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, as well as tiling window managers (Hyprland, Sway, i3)
+- Render engine: pure GTK 4 and Cairo with automatic Libadwaita integration and native GTK 4 fallback
 
 ---
 
@@ -163,7 +170,7 @@ This project is licensed under the GNU General Public License v3.0. License text
 
 # Echo Weather (RU)
 
-Десктопное приложение для GNOME, отображающее метеорологический прогноз. Написано на Python с GTK4 и libadwaita.
+Десктопное приложение погоды для всех дистрибутивов Linux и графических окружений. Работает во всех окружениях (GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, тайлинговые WM). Написано на Python с GTK4, Cairo и опциональным Libadwaita.
 
 [English](#echo-weather) | [Русский](#echo-weather-ru)
 
@@ -177,7 +184,7 @@ This project is licensed under the GNU General Public License v3.0. License text
 
 ## О приложении
 
-Echo Weather получает прогноз погоды из нескольких источников и отображает его в GTK4-интерфейсе. Данные кешируются на диск и привязываются к сохранённым городам. Интерфейс поддерживает русский и английский язык, переключается автоматически по системной локали.
+Echo Weather получает прогноз погоды из нескольких источников и отображает его в современном GTK4-интерфейсе. Приложение спроектировано для универсальной работы на любых дистрибутивах Linux (Arch Linux, Debian, Ubuntu, Linux Mint, Fedora, openSUSE и др.) во всех графических окружениях (GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, а также в тайлинговых оконных менеджерах). Интерфейс отрисовывается на чистом GTK 4 и Cairo с автоматической интеграцией стиля Libadwaita в GNOME и встроенным fallback-режимом для окружений без Libadwaita. Данные кешируются на диск и привязываются к сохранённым городам. Интерфейс поддерживает русский и английский язык, переключается автоматически по системной локали.
 
 ---
 
@@ -207,6 +214,13 @@ Echo Weather получает прогноз погоды из нескольк�
 - Язык интерфейса: ru / en (определяется по системной локали, переключается в настройках)
 - Дисковый кеш прогнозов и геокодинга
 - Детальные карточки: ветер, осадки, UV, давление, видимость, влажность, луна, климат, условия
+- Светлая и темная темы с адаптивными атмосферными фонами
+
+### Совместимость
+
+- Дистрибутивы: бесшовная работа из коробки на Arch, Debian, Ubuntu, Linux Mint, Fedora, openSUSE и любых других Linux-дистрибутивах
+- Графические окружения: GNOME, Cinnamon, KDE Plasma, XFCE, MATE, LXQt, COSMIC, а также тайлинговые оконные менеджеры (Hyprland, Sway, i3)
+- Графический движок: чистый GTK 4 и Cairo с автоматической поддержкой Libadwaita и встроенным fallback-режимом
 
 ---
 
