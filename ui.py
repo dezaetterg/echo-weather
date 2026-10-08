@@ -18,6 +18,7 @@ from config_manager import ConfigManager
 from data.wmo_conditions import MAJOR_CITIES
 from i18n import SUPPORTED_LANGUAGES, get_current_language, i18n, t
 from logger import get_logger
+from utils import trim_memory
 from providers.weather import WeatherProvider
 from weather_atmosphere import AtmosphericCapsuleBox, WeatherAtmosphereBox
 from weather_detail_sheet import WeatherDetailSheet
@@ -1375,6 +1376,7 @@ class EchoWeatherWindow(Gtk.ApplicationWindow):
             self.cities_strip.set_visible(True)
         if hasattr(self, "cities_scroll") and self.cities_scroll:
             self.cities_scroll.set_visible(True)
+        trim_memory()
 
     def is_detail_open(self) -> bool:
         """Check if Level 2 Detail Sheet is currently active."""
@@ -1409,6 +1411,8 @@ class EchoWeatherWindow(Gtk.ApplicationWindow):
                 self.atmosphere_box.resume_animation()
             else:
                 self.atmosphere_box.pause_animation()
+        if not active:
+            trim_memory()
 
     def _on_close_request(self, window):
         """Cleanly shutdown fetch threadpool and animations on window close."""

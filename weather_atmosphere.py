@@ -836,6 +836,13 @@ class AtmosphericCapsuleBox(Gtk.Box):
         if self._cached_bg_key == cache_key and self._cached_bg_surface is not None:
             return self._cached_bg_surface
 
+        if self._cached_bg_surface is not None:
+            try:
+                self._cached_bg_surface.finish()
+            except Exception:
+                pass
+            self._cached_bg_surface = None
+
         surf = self._render_static_bg(mode, w, h)
         self._cached_bg_surface = surf
         self._cached_bg_key = cache_key

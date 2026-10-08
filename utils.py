@@ -196,3 +196,18 @@ def normalize_theme_mode(theme_name: str | None) -> str:
     return "dark"
 
 
+def trim_memory():
+    """Trigger Python garbage collection and return unused heap to OS via malloc_trim."""
+    import gc
+    try:
+        gc.collect()
+        if sys.platform.startswith('linux'):
+            import ctypes
+            libc = ctypes.CDLL('libc.so.6')
+            if hasattr(libc, 'malloc_trim'):
+                libc.malloc_trim(0)
+    except Exception as e:
+        logger.debug("trim_memory exception: %s", e)
+
+
+
