@@ -55,3 +55,8 @@ scratch/
 # Internal planning and specification documents
 REFACTORING_PLAN.md
 SPECIFICATION.md
+
+# Flatpak build artifacts
+.flatpak-builder/
+build-flatpak/
+repo-flatpak/
