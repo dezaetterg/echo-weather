@@ -1,0 +1,35 @@
+name: Flatpak CI
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'packaging/flatpak/**'
+      - '.github/workflows/flatpak.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'packaging/flatpak/**'
+      - '.github/workflows/flatpak.yml'
+
+jobs:
+  validate-metadata:
+    name: Validate AppStream & Desktop Entry
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Validation Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends             appstream             desktop-file-utils
+
+      - name: Validate Desktop Entry
+        run: |
+          desktop-file-validate packaging/flatpak/io.github.dezaetterg.EchoWeather.desktop
+
+      - name: Validate AppStream Metadata
+        run: |
+          appstreamcli validate --strict packaging/flatpak/io.github.dezaetterg.EchoWeather.metainfo.xml
