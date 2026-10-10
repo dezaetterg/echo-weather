@@ -28,8 +28,8 @@ jobs:
 
       - name: Validate Desktop Entry
         run: |
-          desktop-file-validate packaging/flatpak/io.github.dezaetterg.EchoWeather.desktop
+          desktop-file-validate packaging/flatpak/io.github.dezaetterg.Echo_Weather.desktop
 
       - name: Validate AppStream Metadata
         run: |
-          appstreamcli validate --strict packaging/flatpak/io.github.dezaetterg.EchoWeather.metainfo.xml
+          appstreamcli validate --strict packaging/flatpak/io.github.dezaetterg.Echo_Weather.metainfo.xml

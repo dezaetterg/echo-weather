@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BUILD_DIR="$REPO_ROOT/build-flatpak"
 REPO_DIR="$REPO_ROOT/repo-flatpak"
-APP_ID="io.github.dezaetterg.EchoWeather"
+APP_ID="io.github.dezaetterg.Echo_Weather"
 
 echo "=== Echo Weather Flatpak Build ==="
 
