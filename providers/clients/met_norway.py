@@ -16,7 +16,12 @@ from typing import Any
 from i18n import get_current_language, t
 from logger import get_logger
 from providers.clients.base import BaseWeatherClient
-from services.astronomy import calculate_annual_solar_table, calculate_detailed_moon, calculate_solar_details, compute_solar_uv
+from services.astronomy import (
+    calculate_annual_solar_table,
+    calculate_detailed_moon,
+    calculate_solar_details,
+    compute_solar_uv,
+)
 
 logger = get_logger("weather.met_norway")
 

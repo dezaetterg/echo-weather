@@ -18,8 +18,8 @@ from config_manager import ConfigManager
 from data.wmo_conditions import MAJOR_CITIES
 from i18n import SUPPORTED_LANGUAGES, get_current_language, i18n, t
 from logger import get_logger
-from utils import trim_memory
 from providers.weather import WeatherProvider
+from utils import trim_memory
 from weather_atmosphere import AtmosphericCapsuleBox, WeatherAtmosphereBox
 from weather_detail_sheet import WeatherDetailSheet
 from weather_overview_view import WeatherOverviewView

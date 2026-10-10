@@ -14,7 +14,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
-from i18n import get_current_language
+from i18n import get_current_language, t
 
 
 class DayComparisonBarArea(Gtk.DrawingArea):

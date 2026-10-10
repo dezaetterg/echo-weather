@@ -477,7 +477,6 @@ class WeatherForecastData(MutableMapping):
             "climate_averages": self.climate_averages,
             "moon_phase": self.moon_phase,
             "yesterday_comp": _to_data(self.yesterday_comp),
-            "source_name": self.source_name,
             "is_fallback": self.is_fallback,
             "fallback_reason": self.fallback_reason,
             "solar_details": _to_data(self.solar_details),

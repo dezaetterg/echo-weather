@@ -51,3 +51,7 @@ Thumbs.db
 
 # Temporary workspace scratch files
 scratch/
+
+# Internal planning and specification documents
+REFACTORING_PLAN.md
+SPECIFICATION.md
